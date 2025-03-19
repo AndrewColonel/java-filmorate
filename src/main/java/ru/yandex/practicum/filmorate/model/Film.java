@@ -3,13 +3,13 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.Data;
 
 import java.time.Duration;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 public class Film {
-    int id;
+    Integer id;
     String name;
     String description;
-    Date releaseDate;
-    Duration duration;
+    LocalDate releaseDate;
+    Integer duration;
 }
