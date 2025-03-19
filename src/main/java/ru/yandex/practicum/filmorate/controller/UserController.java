@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -27,7 +28,7 @@ public class UserController {
 
     @PostMapping
     // получение всех фильмов
-    public User create(@RequestBody User user) {
+    public User create(@Valid @RequestBody User user) {
         log.trace("Обработка запроса POST");
         if (isNotValid(user)) {
             log.debug("Пользователь {} не прошел валидацию при создании", String.valueOf(user));
@@ -46,7 +47,7 @@ public class UserController {
 
     @PutMapping
     // обновление пользователя
-    public User update(@RequestBody User newUser) {
+    public User update(@Valid @RequestBody User newUser) {
         log.trace("Обработка запроса PUT");
         if (newUser.getId() == null) {
             log.error("не указан ID при обновлении для пользователя {}", String.valueOf(newUser));
