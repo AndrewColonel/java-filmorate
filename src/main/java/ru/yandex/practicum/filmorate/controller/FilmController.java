@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -21,14 +22,14 @@ public class FilmController {
     @GetMapping
     // получение всех фильмов
     public Collection<Film> findAll() {
-        log.trace("Обработка запроса GET");
+        log.trace("Получение списка всех фильмов по GET запросу.");
         return films.values();
     }
 
     @PostMapping
     // добавление фильма
-    public Film create(@RequestBody Film film) {
-        log.trace("Обработка запроса POST");
+    public Film create(@Valid @RequestBody Film film) {
+        log.trace("Начата обработка данных Нового фильма.");
         if (isNotValid(film)) {
             log.debug("фильм {} не прошел валидацию при создании", String.valueOf(film));
             throw new ValidationException("Неверные данные о фильме");
@@ -41,8 +42,8 @@ public class FilmController {
 
     @PutMapping
     // обновление фильма
-    public Film update(@RequestBody Film newFilm) {
-        log.trace("Обработка запроса PUT");
+    public Film update(@Valid @RequestBody Film newFilm) {
+        log.trace("Начата обработка данных для Обновления информации о фильме.");
         if (newFilm.getId() == null) {
             log.error("не указан ID при обновлении для фильма {}", String.valueOf(newFilm));
             throw new ValidationException("Id должен быть указан");
@@ -65,8 +66,7 @@ public class FilmController {
 
     // вспомогательный метод валидации экземпляра фильма
     private boolean isNotValid(Film film) {
-        return film.getName().isBlank()
-                || film.getDescription().length() > 200
+        return  film.getDescription().length() > 200
                 || film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))
                 || film.getDuration() <= 0;
     }

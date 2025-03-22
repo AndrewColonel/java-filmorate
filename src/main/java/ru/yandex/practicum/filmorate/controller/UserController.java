@@ -22,14 +22,14 @@ public class UserController {
     @GetMapping
     // получение списка всех пользователей
     public Collection<User> findAll() {
-        log.trace("Обработка запроса GET");
+        log.trace("Добавден новый пользователь в списко по GET запросу");
         return users.values();
     }
 
     @PostMapping
     // получение всех фильмов
     public User create(@Valid @RequestBody User user) {
-        log.trace("Обработка запроса POST");
+        log.trace("Начата обработка данных нового пользователя");
         if (isNotValid(user)) {
             log.debug("Пользователь {} не прошел валидацию при создании", String.valueOf(user));
             throw new ValidationException("Неверные данные о пользователе");
@@ -48,7 +48,7 @@ public class UserController {
     @PutMapping
     // обновление пользователя
     public User update(@Valid @RequestBody User newUser) {
-        log.trace("Обработка запроса PUT");
+        log.trace("Начата обработка данных для обновления информации о пользователе");
         if (newUser.getId() == null) {
             log.error("не указан ID при обновлении для пользователя {}", String.valueOf(newUser));
             throw new ValidationException("Id должен быть указан");
