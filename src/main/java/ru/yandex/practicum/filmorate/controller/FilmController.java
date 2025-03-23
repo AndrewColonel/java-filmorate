@@ -31,12 +31,12 @@ public class FilmController {
     public Film create(@Valid @RequestBody Film film) {
         log.trace("Начата обработка данных для создания нового фильма.");
         if (isNotValid(film)) {
-            log.debug("фильм {} не прошел валидацию при создании", String.valueOf(film));
+            log.debug("фильм {} не прошел валидацию при создании", film);
             throw new ValidationException("Неверные данные о фильме");
         }
         film.setId(getNextId());
         films.put(film.getId(), film);
-        log.debug("Фильм {} добавлен в хранилище", String.valueOf(film));
+        log.debug("Фильм {} добавлен в хранилище", film);
         return film;
     }
 
@@ -45,12 +45,12 @@ public class FilmController {
     public Film update(@Valid @RequestBody Film newFilm) {
         log.trace("Начата обработка данных для Обновления информации об имеющемся фильме.");
         if (newFilm.getId() == null) {
-            log.error("не указан ID при обновлении для фильма {}", String.valueOf(newFilm));
+            log.error("не указан ID при обновлении для фильма {}", newFilm);
             throw new ValidationException("Id должен быть указан");
         }
         if (films.containsKey(newFilm.getId())) {
             if (isNotValid(newFilm)) {
-                log.debug("фильм {} не прошел валидацию при обновлении", String.valueOf(newFilm));
+                log.debug("фильм {} не прошел валидацию при обновлении", newFilm);
                 throw new ValidationException("Неверные данные о фильме");
             }
             Film oldFilm = films.get(newFilm.getId());
@@ -58,7 +58,7 @@ public class FilmController {
             oldFilm.setDescription(newFilm.getDescription());
             oldFilm.setReleaseDate(newFilm.getReleaseDate());
             oldFilm.setDuration(newFilm.getDuration());
-            log.debug("Фильм {} обновлен в хранилище", String.valueOf(oldFilm));
+            log.debug("Фильм {} обновлен в хранилище", oldFilm);
             return oldFilm;
         }
         throw new NotFoundException("Фильм с id = " + newFilm.getId() + " не найден");

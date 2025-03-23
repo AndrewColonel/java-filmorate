@@ -30,7 +30,7 @@ public class UserController {
     public User create(@Valid @RequestBody User user) {
         log.trace("Начата обработка данных для создания нового пользователя");
         if (isNotValid(user)) {
-            log.debug("Пользователь {} не прошел валидацию при создании", String.valueOf(user));
+            log.debug("Пользователь {} не прошел валидацию при создании", user);
             throw new ValidationException("Неверные данные о пользователе");
         }
         user.setId(getNextId());
@@ -40,7 +40,7 @@ public class UserController {
             user.setName(user.getName());
         }
         users.put(user.getId(), user);
-        log.debug("Пользователь {} добавлен в хранилище", String.valueOf(user));
+        log.debug("Пользователь {} добавлен в хранилище", user);
         return user;
     }
 
@@ -49,12 +49,12 @@ public class UserController {
     public User update(@Valid @RequestBody User newUser) {
         log.trace("Начата обработка данных для обновления информации об имеющемся пользователе");
         if (newUser.getId() == null) {
-            log.error("не указан ID при обновлении для пользователя {}", String.valueOf(newUser));
+            log.error("не указан ID при обновлении для пользователя {}", newUser);
             throw new ValidationException("Id должен быть указан");
         }
         if (users.containsKey(newUser.getId())) {
             if (isNotValid(newUser)) {
-                log.debug("Пользователь {} не прошел валидацию при обновлении", String.valueOf(newUser));
+                log.debug("Пользователь {} не прошел валидацию при обновлении", newUser);
                 throw new ValidationException("Неверные данные о пользователе");
             }
             User oldUser = users.get(newUser.getId());
@@ -67,7 +67,7 @@ public class UserController {
             } else {
                 oldUser.setName(newUser.getName());
             }
-            log.debug("Пользователь {} обновлен в хранилище", String.valueOf(oldUser));
+            log.debug("Пользователь {} обновлен в хранилище", oldUser);
             return oldUser;
         }
         throw new NotFoundException("Пользователь с id = " + newUser.getId() + " не найден");
