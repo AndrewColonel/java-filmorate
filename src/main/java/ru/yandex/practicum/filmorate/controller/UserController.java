@@ -22,14 +22,14 @@ public class UserController {
     @GetMapping
     // получение списка всех пользователей
     public Collection<User> findAll() {
-        log.trace("Добавден новый пользователь в списко по GET запросу");
+        log.trace("Получение списка всех пользователей");
         return users.values();
     }
 
     @PostMapping
     // получение всех фильмов
     public User create(@Valid @RequestBody User user) {
-        log.trace("Начата обработка данных нового пользователя");
+        log.trace("Начата обработка данных для создания нового пользователя");
         if (isNotValid(user)) {
             log.debug("Пользователь {} не прошел валидацию при создании", String.valueOf(user));
             throw new ValidationException("Неверные данные о пользователе");
@@ -48,7 +48,7 @@ public class UserController {
     @PutMapping
     // обновление пользователя
     public User update(@Valid @RequestBody User newUser) {
-        log.trace("Начата обработка данных для обновления информации о пользователе");
+        log.trace("Начата обработка данных для обновления информации об имеющемся пользователе");
         if (newUser.getId() == null) {
             log.error("не указан ID при обновлении для пользователя {}", String.valueOf(newUser));
             throw new ValidationException("Id должен быть указан");
@@ -62,6 +62,7 @@ public class UserController {
             oldUser.setEmail(newUser.getEmail());
             oldUser.setLogin(newUser.getLogin());
             oldUser.setBirthday(newUser.getBirthday());
+            // имя для отображения может быть пустым — в таком случае будет использован логин
             if (newUser.getName() == null || newUser.getName().isBlank()) {
                 oldUser.setName(newUser.getLogin());
             } else {
@@ -75,12 +76,9 @@ public class UserController {
 
     // вспомогательный метод валидации экземпляра пользователя
     private boolean isNotValid(User user) {
-        return user.getEmail().isBlank()
-                || !user.getEmail().contains("@")
-                || user.getLogin() == null
-                || user.getLogin().isBlank()
-                || user.getLogin().contains(" ")
-                || user.getBirthday().isAfter(LocalDate.now());
+        // логин не может быть пустым - проверено через аннотации и содержать пробелы
+        return  user.getLogin().contains(" ");
+
     }
 
     // вспомогательный метод получения следующего значения id
