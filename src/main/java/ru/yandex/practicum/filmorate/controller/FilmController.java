@@ -70,8 +70,7 @@ public class FilmController {
                 // максимальная длина описания — 200 символов;
                 && film.getDescription().length() > 200
                 // дата релиза — не раньше 28 декабря 1895 года;
-                || (film.getReleaseDate() != null)
-                && film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28));
+                || film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28));
     }
 
     // вспомогательный метод получения следующего значения id
