@@ -8,11 +8,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 public class User {
-    Integer id;
+    Long id;
+
+    // войство friends в классе пользователя,
+    // будет содержать список его друзей
+    Set<Long> friends;
 
     // электронная почта не может быть пустой и должна содержать символ `@`
     @NotBlank
@@ -30,4 +35,13 @@ public class User {
     @Past
     @NotNull
     LocalDate birthday;
+
+    public void setFriend(long id) {
+        friends.add(id);
+    }
+
+    public void delFriend(long id) {
+        friends.remove(id);
+    }
+
 }

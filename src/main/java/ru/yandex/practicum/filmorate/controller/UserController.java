@@ -36,5 +36,4 @@ public class UserController {
     public User update(@Valid @RequestBody User newUser) {
         return userStorage.update(newUser);
     }
-
 }

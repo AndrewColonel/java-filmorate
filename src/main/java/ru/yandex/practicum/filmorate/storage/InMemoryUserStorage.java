@@ -9,12 +9,13 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
 
-    private final Map<Integer, User> users = new HashMap<>();
+    private final Map<Long, User> users = new HashMap<>();
 
     // получение списка всех пользователей
     @Override
@@ -23,7 +24,13 @@ public class InMemoryUserStorage implements UserStorage {
         return users.values();
     }
 
-    // получение всех фильмов
+    // поиск пользователя по ID
+    @Override
+    public Optional<User> findUserById(long id) {
+        return Optional.ofNullable(users.get(id));
+    }
+
+    // создание нового пользователя
     @Override
     public User create(User user) {
         log.trace("Начата обработка данных для создания нового пользователя");
@@ -42,7 +49,7 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
-    // обновление пользователя
+    // обновление имеющегося пользователя
     @Override
     public User update(User newUser) {
         log.trace("Начата обработка данных для обновления информации об имеющемся пользователе");
@@ -56,6 +63,7 @@ public class InMemoryUserStorage implements UserStorage {
                 throw new ValidationException("Неверные данные о пользователе");
             }
             User oldUser = users.get(newUser.getId());
+            oldUser.setFriends(newUser.getFriends());
             oldUser.setEmail(newUser.getEmail());
             oldUser.setLogin(newUser.getLogin());
             oldUser.setBirthday(newUser.getBirthday());
@@ -79,10 +87,10 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     // вспомогательный метод получения следующего значения id
-    private int getNextId() { //dfsgfsd
-        int currentMaxId = users.keySet()
+    private Long getNextId() { //dfsgfsd
+        Long currentMaxId = users.keySet()
                 .stream()
-                .mapToInt(id -> id)
+                .mapToLong(id -> id)
                 .max()
                 .orElse(0);
         return ++currentMaxId;
