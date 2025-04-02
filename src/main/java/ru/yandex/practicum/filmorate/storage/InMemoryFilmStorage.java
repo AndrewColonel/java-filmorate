@@ -10,18 +10,25 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
 
-    private final Map<Integer, Film> films = new HashMap<>();
+    private final Map<Long, Film> films = new HashMap<>();
 
     // получение всех фильмов
     @Override
     public Collection<Film> findAll() {
         log.trace("Получение списка всех фильмов.");
         return films.values();
+    }
+
+    // поиск фильмов по ID
+    @Override
+    public Optional<Film> findFilmById(long id) {
+        return Optional.ofNullable(films.get(id));
     }
 
     // добавление фильма
@@ -72,10 +79,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     // вспомогательный метод получения следующего значения id
-    private int getNextId() {
-        int currentMaxId = films.keySet()
+    private Long getNextId() {
+        Long currentMaxId = films.keySet()
                 .stream()
-                .mapToInt(id -> id)
+                .mapToLong(id -> id)
                 .max()
                 .orElse(0);
         return ++currentMaxId;

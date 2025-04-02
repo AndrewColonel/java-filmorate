@@ -15,8 +15,8 @@ import java.util.Set;
 public class User {
     Long id;
 
-    // войство friends в классе пользователя,
-    // будет содержать список его друзей
+    // свойство friends в классе пользователя,
+    // будет содержать список уникальных id пользователей добавляемых в друзья
     Set<Long> friends;
 
     // электронная почта не может быть пустой и должна содержать символ `@`
@@ -36,10 +36,12 @@ public class User {
     @NotNull
     LocalDate birthday;
 
+    // метод для добавления id пользователей во множество
     public void setFriend(long id) {
         friends.add(id);
     }
 
+    // метод для удаления id пользователей во множество
     public void delFriend(long id) {
         friends.remove(id);
     }

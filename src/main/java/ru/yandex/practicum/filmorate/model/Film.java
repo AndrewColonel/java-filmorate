@@ -7,11 +7,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 public class Film {
-    Integer id;
+    Long id;
+
+    // свойство likes в классе abkmvs,
+    // будет содержать список уникальных id пользователей поставивших лайк
+    Set<Long> likes;
 
     // название не может быть пустым и null
     @NotBlank
@@ -30,6 +35,17 @@ public class Film {
     @Positive
     @NotNull
     Integer duration;
+
+    // метод для добавления id пользователей во множество
+    public void setLike(long id) {
+        likes.add(id);
+    }
+
+    // метод для удаления id пользователей во множество
+    public void delLike(long id) {
+        likes.remove(id);
+    }
+
 }
 
 

@@ -30,7 +30,7 @@ class FilmorateApplicationTests {
     @Test
     void shouldCreateNewFilm() {
         // Создаем запись о яильме, котроая пройдет валидацию
-        Film film = new Film(1, "nisi eiusmod", "adipisicing",
+        Film film = new Film(1L,Set.of(), "nisi eiusmod", "adipisicing",
                 LocalDate.parse("1967-03-25"), 100);
         // используем  метод postForEntity() TestRestTemplate, чтобы сделать запрос POST к эндпоинту /films
         ResponseEntity<Film> entity = template.postForEntity("/films", film, Film.class);
@@ -45,14 +45,14 @@ class FilmorateApplicationTests {
 
         // создаем запись о филмме с ошибкой
         // название не может быть пустым и null
-        Film notValidName = new Film(1, "", "adipisicing",
+        Film notValidName = new Film(1L,Set.of(), "", "adipisicing",
                 LocalDate.parse("1967-03-25"), 100);
         ResponseEntity<Film> entity1 = template.postForEntity("/films", notValidName,
                 Film.class);
         assertEquals(HttpStatus.BAD_REQUEST, entity1.getStatusCode());
 
         // максимальная длина описания — 200 символов;
-        Film notValidDescription = new Film(1, "nisi eiusmod",
+        Film notValidDescription = new Film(1L,Set.of(), "nisi eiusmod",
                 "Пятеро друзей ( комик-группа «Шарло»), приезжают в город Бризуль. " +
                         "Здесь они хотят разыскать господина Огюста Куглова, который задолжал им деньги, " +
                         "а именно 20 миллионов. о Куглов, который за время «своего отсутствия», " +
@@ -63,14 +63,14 @@ class FilmorateApplicationTests {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity2.getStatusCode());
 
         // дата релиза — не раньше 28 декабря 1895 года;
-        Film notValidRealeasedDate = new Film(1, "nisi eiusmod", "adipisicing",
+        Film notValidRealeasedDate = new Film(1L,Set.of(),"nisi eiusmod", "adipisicing",
                 LocalDate.parse("1890-03-25"), 100);
         ResponseEntity<Film> entity3 = template.postForEntity("/films", notValidRealeasedDate,
                 Film.class);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity3.getStatusCode());
 
         // продолжительность фильма должна быть положительным числом.
-        Film notValidDuration = new Film(1, "nisi eiusmod", "adipisicing",
+        Film notValidDuration = new Film(1L,Set.of(), "nisi eiusmod", "adipisicing",
                 LocalDate.parse("1967-03-25"), -100);
         ResponseEntity<Film> entity4 = template.postForEntity("/films", notValidDuration,
                 Film.class);
