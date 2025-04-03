@@ -87,8 +87,8 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     // вспомогательный метод получения следующего значения id
-    private Long getNextId() { //dfsgfsd
-        Long currentMaxId = users.keySet()
+    private long getNextId() { //dfsgfsd
+        long currentMaxId = users.keySet()
                 .stream()
                 .mapToLong(id -> id)
                 .max()

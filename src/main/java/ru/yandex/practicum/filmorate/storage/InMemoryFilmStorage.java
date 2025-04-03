@@ -99,8 +99,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     // вспомогательный метод получения следующего значения id
-    private Long getNextId() {
-        Long currentMaxId = films.keySet()
+    private long getNextId() {
+        long currentMaxId = films.keySet()
                 .stream()
                 .mapToLong(id -> id)
                 .max()
