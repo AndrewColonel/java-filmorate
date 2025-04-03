@@ -8,6 +8,9 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 public class FilmService {
 
@@ -28,7 +31,7 @@ public class FilmService {
         User user = userStorage.findUserById(userId)
                 .orElseThrow(() ->
                         new NotFoundException(String.format("Пользователя с ID %d не существует.", userId)));
-        film.setLike(userId);
+        film.getLikes().add(userId);
         return film;
     }
 
@@ -40,12 +43,15 @@ public class FilmService {
         User user = userStorage.findUserById(userId)
                 .orElseThrow(() ->
                         new NotFoundException(String.format("Пользователя с ID %d не существует.", userId)));
-        film.delLike(userId);
+        film.getLikes().remove(userId);
         return film;
     }
 
     // возвращает список из первых `count` фильмов по количеству лайков.
     // Если значение параметра `count` не задано, верните первые 10
-
-
+    public Set<Film> topChart(int count) {
+        return filmStorage.findAll().stream()
+                .limit(count)
+                .collect(Collectors.toSet());
+    }
 }

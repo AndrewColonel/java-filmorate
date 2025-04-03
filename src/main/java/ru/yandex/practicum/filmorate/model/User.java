@@ -35,15 +35,4 @@ public class User {
     @Past
     @NotNull
     LocalDate birthday;
-
-    // метод для добавления id пользователей во множество
-    public void setFriend(long id) {
-        friends.add(id);
-    }
-
-    // метод для удаления id пользователей во множество
-    public void delFriend(long id) {
-        friends.remove(id);
-    }
-
 }

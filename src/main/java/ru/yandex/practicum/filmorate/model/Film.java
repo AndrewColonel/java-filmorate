@@ -36,16 +36,6 @@ public class Film {
     @NotNull
     Integer duration;
 
-    // метод для добавления id пользователей во множество
-    public void setLike(long id) {
-        likes.add(id);
-    }
-
-    // метод для удаления id пользователей во множество
-    public void delLike(long id) {
-        likes.remove(id);
-    }
-
 }
 
 

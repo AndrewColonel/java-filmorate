@@ -27,8 +27,8 @@ public class UserService {
         User friend = userStorage.findUserById(frientId)
                 .orElseThrow(() ->
                         new NotFoundException(String.format("Пользователя с ID %d не существует.", frientId)));
-        user.setFriend(frientId);
-        friend.setFriend(userId);
+        user.getFriends().add(frientId);
+        friend.getFriends().add(userId);
         return user;
     }
 
@@ -40,8 +40,8 @@ public class UserService {
         User friend = userStorage.findUserById(frientId)
                 .orElseThrow(() ->
                         new NotFoundException(String.format("Пользователя с ID %d не существует.", frientId)));
-        user.delFriend(frientId);
-        friend.delFriend(userId);
+        user.getFriends().remove(frientId);
+        friend.getFriends().remove(userId);
         return user;
     }
 
