@@ -17,4 +17,5 @@ public interface UserStorage {
 
     // обновление имеющегося пользователя
     User update(User newUser);
+
 }

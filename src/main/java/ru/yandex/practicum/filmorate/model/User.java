@@ -4,10 +4,11 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
 import java.time.LocalDate;
+
 import java.util.Set;
 
 @Data
@@ -17,6 +18,7 @@ public class User {
 
     // свойство friends в классе пользователя,
     // будет содержать список уникальных id пользователей добавляемых в друзья
+//    @NonNull
     Set<Long> friends;
 
     // электронная почта не может быть пустой и должна содержать символ `@`
@@ -35,4 +37,5 @@ public class User {
     @Past
     @NotNull
     LocalDate birthday;
+
 }

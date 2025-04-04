@@ -6,16 +6,13 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
 
-    private final Map<Long, User> users = new HashMap<>();
+    static final Map<Long, User> users = new HashMap<>();
 
     // получение списка всех пользователей
     @Override
@@ -44,6 +41,8 @@ public class InMemoryUserStorage implements UserStorage {
         } else {
             user.setName(user.getName());
         }
+        // при создании c lombok контрсутором список остался null- необходимо создать пустой список
+        if (user.getFriends() == null) user.setFriends(new HashSet<>());
         users.put(user.getId(), user);
         log.debug("Пользователь {} добавлен в хранилище", user);
         return user;
@@ -63,7 +62,10 @@ public class InMemoryUserStorage implements UserStorage {
                 throw new ValidationException("Неверные данные о пользователе");
             }
             User oldUser = users.get(newUser.getId());
-            oldUser.setFriends(newUser.getFriends());
+            // если передали список друзей, надо его принять
+            if (newUser.getFriends() != null) {
+                oldUser.setFriends(newUser.getFriends());
+            }
             oldUser.setEmail(newUser.getEmail());
             oldUser.setLogin(newUser.getLogin());
             oldUser.setBirthday(newUser.getBirthday());

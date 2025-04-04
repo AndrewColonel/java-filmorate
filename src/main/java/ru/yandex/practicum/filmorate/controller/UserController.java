@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
@@ -13,10 +14,12 @@ import java.util.Collection;
 public class UserController {
 
     private final UserStorage userStorage;
+    private final UserService userService;
 
     @Autowired
-    public UserController(UserStorage userStorage) {
+    public UserController(UserStorage userStorage, UserService userService) {
         this.userStorage = userStorage;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -35,5 +38,30 @@ public class UserController {
     // обновление пользователя
     public User update(@Valid @RequestBody User newUser) {
         return userStorage.update(newUser);
+    }
+
+    // добавление в друзья
+    @PutMapping("/{id}/friends/{friendId}")
+    public User addFriends(@PathVariable("id") long userId, @PathVariable("friendId") long friendId) {
+        return userService.addFriends(userId, friendId);
+    }
+
+    // удаление из друзей
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public User delFriends(@PathVariable("id") long userId, @PathVariable("friendId") long friendId) {
+        return userService.delFriends(userId, friendId);
+    }
+
+    // возвращаем список пользователей, являющихся его друзьями
+    @GetMapping("/{id}/friends")
+    public Collection<Long> getFriendsList(@PathVariable("id") long id) {
+        return userService.getFriendsList(id);
+    }
+
+    // список друзей, общих с другим пользователем
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public Collection<Long> getCommonFriendsList(@PathVariable("id") long userId,
+                                          @PathVariable("otherId") long otherId) {
+        return userService.getCommonFriendsList(userId, otherId);
     }
 }

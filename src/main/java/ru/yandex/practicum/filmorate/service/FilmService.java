@@ -8,8 +8,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 public class FilmService {
@@ -48,10 +47,10 @@ public class FilmService {
     }
 
     // возвращает список из первых `count` фильмов по количеству лайков.
-    // Если значение параметра `count` не задано, верните первые 10
-    public Set<Film> topChart(int count) {
-        return filmStorage.findAll().stream()
-                .limit(count)
-                .collect(Collectors.toSet());
+    public Collection<Film> topChart(long count) {
+        Set<Film> chartSet =
+                new TreeSet<>(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed());
+        chartSet.addAll(filmStorage.findAll());
+        return chartSet.stream().limit(count).toList();
     }
 }

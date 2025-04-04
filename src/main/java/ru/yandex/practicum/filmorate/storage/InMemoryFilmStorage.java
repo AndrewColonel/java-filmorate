@@ -13,30 +13,7 @@ import java.util.*;
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
 
-
-    Comparator<Long> comparingFilm = new Comparator<>() {
-        @Override
-        public int compare(Long l1, Long l2) {
-            return films.get(l1).getLikes().size() - films.get(l2).getLikes().size();
-        }
-    };
-
-    //    private final Map<Long, Film> films = new HashMap<>();
-// для эффективной сортировки топ чарт списка фильмов использую treeMap с заданым компоратором
-    private final Map<Long, Film> films = new TreeMap<>(comparingFilm);
-
-
-//    private final Set<Film> chartSet =
-//            new TreeSet<>(Comparator.comparingInt((Film f) -> f.getLikes().size()));
-//
-//    Comparator<Film> comparingFilm = new Comparator<Film>() {
-//        @Override
-//        public int compare(Film o1, Film o2) {
-//            return o1.getLikes().size() - o2.getLikes().size();
-//
-//        }
-//    };
-
+    private final Map<Long, Film> films = new HashMap<>();
 
     // получение всех фильмов
     @Override
@@ -60,6 +37,8 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new ValidationException("Неверные данные о фильме");
         }
         film.setId(getNextId());
+        // при создании c lombok контрсутором список остался null- необходимо создать пустой список
+        if (film.getLikes() == null) film.setLikes(new HashSet<>());
         films.put(film.getId(), film);
         log.debug("Фильм {} добавлен в хранилище", film);
         return film;
@@ -83,6 +62,11 @@ public class InMemoryFilmStorage implements FilmStorage {
             oldFilm.setDescription(newFilm.getDescription());
             oldFilm.setReleaseDate(newFilm.getReleaseDate());
             oldFilm.setDuration(newFilm.getDuration());
+
+            // если передали список лайков, надо его принять
+            if (newFilm.getLikes() != null) {
+                oldFilm.setLikes(newFilm.getLikes());
+            }
             log.debug("Фильм {} обновлен в хранилище", oldFilm);
             return oldFilm;
         }
