@@ -60,14 +60,14 @@ class FilmorateApplicationTests {
                 LocalDate.parse("1967-03-25"), 100);
         ResponseEntity<Film> entity2 = template.postForEntity("/films", notValidDescription,
                 Film.class);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity2.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, entity2.getStatusCode());
 
         // дата релиза — не раньше 28 декабря 1895 года;
         Film notValidRealeasedDate = new Film(1L,Set.of(),"nisi eiusmod", "adipisicing",
                 LocalDate.parse("1890-03-25"), 100);
         ResponseEntity<Film> entity3 = template.postForEntity("/films", notValidRealeasedDate,
                 Film.class);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity3.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, entity3.getStatusCode());
 
         // продолжительность фильма должна быть положительным числом.
         Film notValidDuration = new Film(1L,Set.of(), "nisi eiusmod", "adipisicing",
@@ -99,7 +99,7 @@ class FilmorateApplicationTests {
                 LocalDate.parse("1946-08-20"));
         ResponseEntity<Film> entity1 = template.postForEntity("/users", notValidLogin,
                 Film.class);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity1.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, entity1.getStatusCode());
 
         // электронная почта не может быть пустой и должна содержать символ `@`
         User notValidEmail = new User(1L, Set.of(), "mail&mail.ru","dolore","Nick Name",

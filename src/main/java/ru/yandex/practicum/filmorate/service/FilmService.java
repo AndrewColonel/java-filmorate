@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -11,6 +12,7 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import java.util.*;
 
 @Service
+@Slf4j
 public class FilmService {
 
     private final FilmStorage filmStorage;
@@ -24,31 +26,42 @@ public class FilmService {
 
     // пользователь ставит лайк фильму
     public Film addLikes(long filmId, long userId) {
+        log.trace("Вызван метод добавления Лайка для фильма с ID {} от пользователя с ID {}",filmId,userId);
         Film film = filmStorage.findFilmById(filmId)
                 .orElseThrow(() ->
                         new NotFoundException(String.format("Фильма с ID %d не найдено", filmId)));
         User user = userStorage.findUserById(userId)
                 .orElseThrow(() ->
                         new NotFoundException(String.format("Пользователя с ID %d не существует.", userId)));
-        film.getLikes().add(userId);
+        if (film.getLikes().add(userId)) {
+            log.debug("Для фильма {} добавлен лайк от пользователя {}",filmId, userId);
+        } else {
+            log.debug("Поставить лайк для фильма {} от пользователя {} не удалось}",filmId, userId);
+        }
         return film;
     }
 
     // пользователь удаляет лайк.
     public Film delLikes(long filmId, long userId) {
+        log.trace("Вызван метод удаления  Лайка для фильма с ID {} от пользователя с ID {}",filmId,userId);
         Film film = filmStorage.findFilmById(filmId)
                 .orElseThrow(() ->
                         new NotFoundException(String.format("Фильма с ID %d не найдено", filmId)));
         User user = userStorage.findUserById(userId)
                 .orElseThrow(() ->
                         new NotFoundException(String.format("Пользователя с ID %d не существует.", userId)));
-        film.getLikes().remove(userId);
+        if (film.getLikes().remove(userId)) {
+            log.debug("Удален лайк для фильма {} от пользователя {}",filmId,userId);
+        } else {
+           log.debug("Для фильма {} не удален лайк пользователя {}", filmId,userId);
+        }
         return film;
     }
 
     // возвращает список из первых `count` фильмов по количеству лайков.
     // предварительно весь срисок фильмов был помещен в TreeSet с компоратором для получения чарта
     public Collection<Film> topChart(long count) {
+        log.trace("Вызван метод вывод чарт списка для {} фильмов", count);
         Set<Film> chartSet =
                 new TreeSet<>(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed());
         chartSet.addAll(filmStorage.findAll());

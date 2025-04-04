@@ -1,0 +1,12 @@
+server.port:
+  8080
+
+logging.level:
+  root: INFO
+  ru.yandex.practicum.filmorate:
+    storage: TRACE
+    service: TRACE
+
+logging.level.org.zalando.logbook: ERROR
+
+server.error.include-message: always
