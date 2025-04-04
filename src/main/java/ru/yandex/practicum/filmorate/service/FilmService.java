@@ -47,6 +47,7 @@ public class FilmService {
     }
 
     // возвращает список из первых `count` фильмов по количеству лайков.
+    // предварительно весь срисок фильмов был помещен в TreeSet с компоратором для получения чарта
     public Collection<Film> topChart(long count) {
         Set<Film> chartSet =
                 new TreeSet<>(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed());
