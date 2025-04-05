@@ -23,30 +23,42 @@ public class FilmService {
         this.userStorage = userStorage;
     }
 
+    public Collection<Film> findAll() {
+        return filmStorage.findAll();
+    }
+
+    public Film create(Film film) {
+        return filmStorage.create(film);
+    }
+
+    public Film update(Film newFilm) {
+        return filmStorage.update(newFilm);
+    }
+
     // пользователь ставит лайк фильму
     public Film addLikes(long filmId, long userId) {
-        log.trace("Вызван метод добавления Лайка для фильма с ID {} от пользователя с ID {}",filmId,userId);
+        log.trace("Вызван метод добавления Лайка для фильма с ID {} от пользователя с ID {}", filmId, userId);
         // успешный вызов метода поиска фильма и пользователя по ID гарантирует их существование
         Film film = filmStorage.findFilmById(filmId);
         User user = userStorage.findUserById(userId);
         if (film.getLikes().add(userId)) {
-            log.debug("Для фильма {} добавлен лайк от пользователя {}",filmId, userId);
+            log.debug("Для фильма {} добавлен лайк от пользователя {}", filmId, userId);
         } else {
-            log.debug("Поставить лайк для фильма {} от пользователя {} не удалось}",filmId, userId);
+            log.debug("Поставить лайк для фильма {} от пользователя {} не удалось}", filmId, userId);
         }
         return film;
     }
 
     // пользователь удаляет лайк.
     public Film delLikes(long filmId, long userId) {
-        log.trace("Вызван метод удаления  Лайка для фильма с ID {} от пользователя с ID {}",filmId,userId);
+        log.trace("Вызван метод удаления  Лайка для фильма с ID {} от пользователя с ID {}", filmId, userId);
         // успешный вызов метода поиска фильма и пользователя по ID гарантирует их существование
         Film film = filmStorage.findFilmById(filmId);
         User user = userStorage.findUserById(userId);
         if (film.getLikes().remove(userId)) {
-            log.debug("Удален лайк для фильма {} от пользователя {}",filmId,userId);
+            log.debug("Удален лайк для фильма {} от пользователя {}", filmId, userId);
         } else {
-           log.debug("Для фильма {} не удален лайк пользователя {}", filmId,userId);
+            log.debug("Для фильма {} не удален лайк пользователя {}", filmId, userId);
         }
         return film;
     }

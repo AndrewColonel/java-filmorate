@@ -20,11 +20,23 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
+    public Collection<User> findAll() {
+        return userStorage.findAll();
+    }
+
+    public User create(User user) {
+        return userStorage.create(user);
+    }
+
+    public User update(User newUser) {
+        return userStorage.update(newUser);
+    }
+
     // добавляем друзей
     public User addFriends(long userId, long friendId) {
         log.trace("Для пользователя с ID {} вызван метод по добавлению друга ID {}", userId, friendId);
         if (userId == friendId) {
-            throw new DuplicatedDataException(String.format("Пользователь %s добавляет сам себя в друзья",userId));
+            throw new DuplicatedDataException(String.format("Пользователь %s добавляет сам себя в друзья", userId));
         }
         User user = userStorage.findUserById(userId);
         User friend = userStorage.findUserById(friendId);
@@ -60,8 +72,9 @@ public class UserService {
     // возвращаем список друзей, общих с другим пользователем
     public Collection<User> getCommonFriends(long userId, long otherId) {
         log.trace("Вызван метод по вормированию списка общих друзей для пользователей с ID {} и {}", userId, otherId);
+        Collection<Long> otherUserFriendList = getFriendsList(otherId);
         return getFriendsList(userId).stream()
-                .filter(id -> getFriendsList(otherId).contains(id))
+                .filter(otherUserFriendList::contains)
                 .map(userStorage::findUserById)
                 .toList();
     }

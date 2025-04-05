@@ -24,11 +24,9 @@ public class InMemoryUserStorage implements UserStorage {
     // поиск пользователя по ID
     @Override
     public User findUserById(long id) {
-        return users.values().stream()
-                .filter(user -> user.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() ->
-                        new NotFoundException(String.format("Пользователя с ID %d не существует.", id)));
+        User user = users.get(id);
+        if (user == null) throw new NotFoundException(String.format("Пользователя с ID %d не существует.", id));
+        return user;
     }
 
     // создание нового пользователя

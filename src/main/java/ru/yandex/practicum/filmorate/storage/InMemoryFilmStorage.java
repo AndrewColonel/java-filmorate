@@ -25,11 +25,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     // поиск фильмов по ID
     @Override
     public Film findFilmById(long id) {
-        return films.values().stream()
-                .filter(film -> film.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() ->
-                        new NotFoundException(String.format("Фильма с ID %d не найдено", id)));
+        Film film = films.get(id);
+        if (film == null) throw new NotFoundException(String.format("Фильма с ID %d не найдено", id));
+        return film;
     }
 
     // добавление фильма
