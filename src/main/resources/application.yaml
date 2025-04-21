@@ -10,3 +10,26 @@ logging.level:
 logging.level.org.zalando.logbook: ERROR
 
 server.error.include-message: always
+
+spring:
+  sql:
+    init:
+      mode: always
+  # http://localhost:8080/h2-console
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings.trace: false
+      settings.web-allow-others: false
+  datasource:
+    # в jdbc-url укажите, что данные нужно сохранять в файл
+    url: jdbc:h2:file:./db/filmorate;DATABASE_TO_UPPER=FALSE
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+#  jpa:
+#    database-platform: org.hibernate.dialect.H2Dialect
+
+
+

@@ -14,13 +14,14 @@ import java.util.Set;
 public class Film {
     Long id;
 
-    // свойство likes в классе abkmvs,
-    // будет содержать список уникальных id пользователей поставивших лайк
-    Set<Long> likes;
-
     // название не может быть пустым и null
     @NotBlank
     String name;
+
+    // продолжительность фильма должна быть положительным числом и не null
+    @Positive
+    @NotNull
+    Integer duration;
 
     // описание может быть null, но если есть то не более 200 символов,
     // проверка валидности в контроллере
@@ -31,10 +32,12 @@ public class Film {
     @NotNull
     LocalDate releaseDate;
 
-    // продолжительность фильма должна быть положительным числом и не null
-    @Positive
-    @NotNull
-    Integer duration;
+    // идентификатор рейтинга фильмов
+    int ratingId;
+
+    // свойство likes в классе abkmvs,
+    // будет содержать список уникальных id пользователей поставивших лайк
+    Set<Long> likes;
 
 }
 
