@@ -30,8 +30,8 @@ class FilmorateApplicationTests {
     @Test
     void shouldCreateNewFilm() {
         // Создаем запись о яильме, котроая пройдет валидацию
-        Film film = new Film(1L,Set.of(), "nisi eiusmod", "adipisicing",
-                LocalDate.parse("1967-03-25"), 100);
+        Film film = new Film(1L, "nisi eiusmod", 100,"adipisicing",
+                LocalDate.parse("1967-03-25"), Set.of());
         // используем  метод postForEntity() TestRestTemplate, чтобы сделать запрос POST к эндпоинту /films
         ResponseEntity<Film> entity = template.postForEntity("/films", film, Film.class);
         assertEquals(HttpStatus.OK, entity.getStatusCode());
@@ -45,33 +45,33 @@ class FilmorateApplicationTests {
 
         // создаем запись о филмме с ошибкой
         // название не может быть пустым и null
-        Film notValidName = new Film(1L,Set.of(), "", "adipisicing",
-                LocalDate.parse("1967-03-25"), 100);
+        Film notValidName = new Film(1L, "",  100, "adipisicing",
+                LocalDate.parse("1967-03-25"),Set.of());
         ResponseEntity<Film> entity1 = template.postForEntity("/films", notValidName,
                 Film.class);
         assertEquals(HttpStatus.BAD_REQUEST, entity1.getStatusCode());
 
         // максимальная длина описания — 200 символов;
-        Film notValidDescription = new Film(1L,Set.of(), "nisi eiusmod",
+        Film notValidDescription = new Film(1L,"nisi eiusmod", 100,
                 "Пятеро друзей ( комик-группа «Шарло»), приезжают в город Бризуль. " +
                         "Здесь они хотят разыскать господина Огюста Куглова, который задолжал им деньги, " +
                         "а именно 20 миллионов. о Куглов, который за время «своего отсутствия», " +
                         "стал кандидатом Коломбани.",
-                LocalDate.parse("1967-03-25"), 100);
+                LocalDate.parse("1967-03-25"),Set.of());
         ResponseEntity<Film> entity2 = template.postForEntity("/films", notValidDescription,
                 Film.class);
         assertEquals(HttpStatus.BAD_REQUEST, entity2.getStatusCode());
 
         // дата релиза — не раньше 28 декабря 1895 года;
-        Film notValidRealeasedDate = new Film(1L,Set.of(),"nisi eiusmod", "adipisicing",
-                LocalDate.parse("1890-03-25"), 100);
+        Film notValidRealeasedDate = new Film(1L, "nisi eiusmod",100, "adipisicing",
+                LocalDate.parse("1890-03-25"),Set.of());
         ResponseEntity<Film> entity3 = template.postForEntity("/films", notValidRealeasedDate,
                 Film.class);
         assertEquals(HttpStatus.BAD_REQUEST, entity3.getStatusCode());
 
         // продолжительность фильма должна быть положительным числом.
-        Film notValidDuration = new Film(1L,Set.of(), "nisi eiusmod", "adipisicing",
-                LocalDate.parse("1967-03-25"), -100);
+        Film notValidDuration = new Film(1L, "nisi eiusmod", -100,"adipisicing",
+                LocalDate.parse("1967-03-25"),Set.of());
         ResponseEntity<Film> entity4 = template.postForEntity("/films", notValidDuration,
                 Film.class);
         assertEquals(HttpStatus.BAD_REQUEST, entity4.getStatusCode());
@@ -80,8 +80,8 @@ class FilmorateApplicationTests {
     @Test
     void shouldCreateNewUser() {
         // Создаем запись о пользователе, котроая пройдет валидацию
-        User user = new User(1L, Set.of(), "mail@mail.ru","dolore","Nick Name",
-                LocalDate.parse("1946-08-20"));
+        User user = new User(1L,"dolore",  "mail@mail.ru","Nick Name",
+                LocalDate.parse("1946-08-20"), Set.of());
         // используем  метод postForEntity() TestRestTemplate, чтобы сделать запрос POST к эндпоинту /users
         ResponseEntity<User> entity = template.postForEntity("/users", user, User.class);
         assertEquals(HttpStatus.OK, entity.getStatusCode());
@@ -95,22 +95,22 @@ class FilmorateApplicationTests {
 
         // создаем запись о пользователе с ошибкой
         // логин не может быть пустым - проверено через аннотации и содержать пробелы
-        User notValidLogin = new User(1L, Set.of(),"mail@mail.ru","dolore ullamco","Nick Name",
-                LocalDate.parse("1946-08-20"));
+        User notValidLogin = new User(1L,"dolore ullamco","mail@mail.ru","Nick Name",
+                LocalDate.parse("1946-08-20"), Set.of());
         ResponseEntity<Film> entity1 = template.postForEntity("/users", notValidLogin,
                 Film.class);
         assertEquals(HttpStatus.BAD_REQUEST, entity1.getStatusCode());
 
         // электронная почта не может быть пустой и должна содержать символ `@`
-        User notValidEmail = new User(1L, Set.of(), "mail&mail.ru","dolore","Nick Name",
-                LocalDate.parse("1946-08-20"));
+        User notValidEmail = new User(1L, "dolore", "mail&mail.ru","Nick Name",
+                LocalDate.parse("1946-08-20"), Set.of());
         ResponseEntity<Film> entity2 = template.postForEntity("/users", notValidEmail,
                 Film.class);
         assertEquals(HttpStatus.BAD_REQUEST, entity2.getStatusCode());
 
         // дата рождения не может быть в будущем и пустым.
-        User notValidBirthday = new User(1L, Set.of(), "mail@mail.ru","dolore","Nick Name",
-                LocalDate.parse("2030-08-20"));
+        User notValidBirthday = new User(1L, "dolore","mail@mail.ru","Nick Name",
+                LocalDate.parse("2030-08-20"), Set.of());
         ResponseEntity<Film> entity3 = template.postForEntity("/users", notValidBirthday,
                 Film.class);
         assertEquals(HttpStatus.BAD_REQUEST, entity3.getStatusCode());

@@ -32,8 +32,8 @@ public class Film {
     @NotNull
     LocalDate releaseDate;
 
-    // идентификатор рейтинга фильмов
-    int ratingId;
+//    // идентификатор рейтинга фильмов
+//    int ratingId;
 
     // свойство likes в классе abkmvs,
     // будет содержать список уникальных id пользователей поставивших лайк
