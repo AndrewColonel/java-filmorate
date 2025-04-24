@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.InternalServerException;
+
 import ru.yandex.practicum.filmorate.model.Friends;
 
 import java.util.Set;
@@ -30,13 +30,18 @@ public class FriendsDbStorage extends BaseDbStorage<Friends> {
                 .collect(Collectors.toSet());
     }
 
+    // обновляем списко друзей пользователя - сначала зачищаем весь список друзей данного пользователя
+    // и вне зависимости от рзультата записываем id друзей
     public void updateFriends(long userId, Set<Long> friends) {
-        try {
-            update(DELETE_FRIENDS_ID_QUERY, userId);
-        }
-        catch (InternalServerException ignored) {}
-        finally {
-            friends.forEach(id -> insert(CREATE_FRIENDS_ID_QUERY, userId, id));
-        }
+        delete(DELETE_FRIENDS_ID_QUERY, userId);
+        friends.forEach(id -> insert(CREATE_FRIENDS_ID_QUERY, userId, id));
+
+//        try {
+//            update(DELETE_FRIENDS_ID_QUERY, userId);
+//        }
+//        catch (InternalServerException ignored) {}
+//        finally {
+//            friends.forEach(id -> insert(CREATE_FRIENDS_ID_QUERY, userId, id));
+//        }
     }
 }
