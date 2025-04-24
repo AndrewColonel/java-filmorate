@@ -35,13 +35,5 @@ public class FriendsDbStorage extends BaseDbStorage<Friends> {
     public void updateFriends(long userId, Set<Long> friends) {
         delete(DELETE_FRIENDS_ID_QUERY, userId);
         friends.forEach(id -> insert(CREATE_FRIENDS_ID_QUERY, userId, id));
-
-//        try {
-//            update(DELETE_FRIENDS_ID_QUERY, userId);
-//        }
-//        catch (InternalServerException ignored) {}
-//        finally {
-//            friends.forEach(id -> insert(CREATE_FRIENDS_ID_QUERY, userId, id));
-//        }
     }
 }
