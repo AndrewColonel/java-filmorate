@@ -24,7 +24,8 @@ spring:
       settings.web-allow-others: false
   datasource:
     # в jdbc-url укажите, что данные нужно сохранять в файл
-    url: jdbc:h2:file:./db/filmorate;DATABASE_TO_UPPER=FALSE
+    # url: jdbc:h2:file:./db/filmorate;DATABASE_TO_UPPER=FALSE;MODE=PostgreSQL;
+    url: jdbc:h2:file:./db/filmorate;DATABASE_TO_UPPER=FALSE;
     username: sa
     password: password
     driverClassName: org.h2.Driver

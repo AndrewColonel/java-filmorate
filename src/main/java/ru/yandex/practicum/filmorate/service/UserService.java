@@ -45,6 +45,7 @@ public class UserService {
         } else {
             log.debug("Для пользователя с ID {} не удалось добавить в друзья ID {}", userId, friendId);
         }
+        // в другой реализации можно\нужно обновлять только таблицу друзей. а не всего пользователя
         return userStorage.update(user);
     }
 
@@ -58,6 +59,7 @@ public class UserService {
         } else {
             log.debug("Для пользователя с ID {} не удалось удалить из друзей {}", userId, friendId);
         }
+        // в другой реализации можно\нужно обновлять только таблицу друзей. а не всего пользователя
         return userStorage.update(user);
     }
 

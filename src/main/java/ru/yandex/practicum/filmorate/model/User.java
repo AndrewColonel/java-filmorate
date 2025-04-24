@@ -43,6 +43,6 @@ public class User {
 
     // статус для связи «дружба» между двумя пользователями
     // неподтверждённая и подтверждённая (unconfirmed и confirmed) - два ключа
-//    Map<String,Set<Long>> friendsStatus;
+    Map<String,Set<Long>> friendsStatus;
 
 }

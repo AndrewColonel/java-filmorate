@@ -46,7 +46,8 @@ public class FilmService {
         } else {
             log.debug("Поставить лайк для фильма {} от пользователя {} не удалось}", filmId, userId);
         }
-        return film;
+        // в другой реализации можно\нужно обновлять только таблицу fqrjd. а не весь фильм
+        return filmStorage.update(film);
     }
 
     // пользователь удаляет лайк.
@@ -60,7 +61,8 @@ public class FilmService {
         } else {
             log.debug("Для фильма {} не удален лайк пользователя {}", filmId, userId);
         }
-        return film;
+        // в другой реализации можно\нужно обновлять только таблицу fqrjd. а не весь фильм
+        return filmStorage.update(film);
     }
 
     // возвращает список из первых `count` фильмов по количеству лайков.

@@ -30,7 +30,7 @@ public class FriendsDbStorage extends BaseDbStorage<Friends> {
                 .collect(Collectors.toSet());
     }
 
-    // обновляем списко друзей пользователя - сначала зачищаем весь список друзей данного пользователя
+    // обновляем список друзей пользователя - сначала зачищаем весь список друзей данного пользователя
     // и вне зависимости от рзультата записываем id друзей
     public void updateFriends(long userId, Set<Long> friends) {
         delete(DELETE_FRIENDS_ID_QUERY, userId);

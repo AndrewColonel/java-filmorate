@@ -117,6 +117,8 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
     }
 
 
+
+
     // вспомогательный метод валидации экземпляра пользователя
     private boolean isNotValid(User user) {
         // логин не может быть пустым - проверено через аннотации и содержать пробелы

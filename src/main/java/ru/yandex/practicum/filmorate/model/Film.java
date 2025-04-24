@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import java.util.Set;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class Film {
     Long id;
 
@@ -32,13 +34,13 @@ public class Film {
     @NotNull
     LocalDate releaseDate;
 
-//    // идентификатор рейтинга фильмов
-//    int ratingId;
-
     // свойство likes в классе abkmvs,
     // будет содержать список уникальных id пользователей поставивших лайк
     Set<Long> likes;
 
+
+    // идентификатор рейтинга фильмов
+    int mpa;
 }
 
 
