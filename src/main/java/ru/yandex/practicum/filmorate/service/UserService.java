@@ -45,7 +45,7 @@ public class UserService {
         } else {
             log.debug("Для пользователя с ID {} не удалось добавить в друзья ID {}", userId, friendId);
         }
-        return user;
+        return userStorage.update(user);
     }
 
     // удаляем друзей
@@ -58,7 +58,7 @@ public class UserService {
         } else {
             log.debug("Для пользователя с ID {} не удалось удалить из друзей {}", userId, friendId);
         }
-        return user;
+        return userStorage.update(user);
     }
 
     // возвращает список друзей

@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -81,7 +82,7 @@ class FilmorateApplicationTests {
     void shouldCreateNewUser() {
         // Создаем запись о пользователе, котроая пройдет валидацию
         User user = new User(1L,"dolore",  "mail@mail.ru","Nick Name",
-                LocalDate.parse("1946-08-20"), Set.of());
+                LocalDate.parse("1946-08-20"), Set.of(), Map.of());
         // используем  метод postForEntity() TestRestTemplate, чтобы сделать запрос POST к эндпоинту /users
         ResponseEntity<User> entity = template.postForEntity("/users", user, User.class);
         assertEquals(HttpStatus.OK, entity.getStatusCode());
@@ -96,21 +97,21 @@ class FilmorateApplicationTests {
         // создаем запись о пользователе с ошибкой
         // логин не может быть пустым - проверено через аннотации и содержать пробелы
         User notValidLogin = new User(1L,"dolore ullamco","mail@mail.ru","Nick Name",
-                LocalDate.parse("1946-08-20"), Set.of());
+                LocalDate.parse("1946-08-20"), Set.of(), Map.of());
         ResponseEntity<Film> entity1 = template.postForEntity("/users", notValidLogin,
                 Film.class);
         assertEquals(HttpStatus.BAD_REQUEST, entity1.getStatusCode());
 
         // электронная почта не может быть пустой и должна содержать символ `@`
         User notValidEmail = new User(1L, "dolore", "mail&mail.ru","Nick Name",
-                LocalDate.parse("1946-08-20"), Set.of());
+                LocalDate.parse("1946-08-20"), Set.of(), Map.of());
         ResponseEntity<Film> entity2 = template.postForEntity("/users", notValidEmail,
                 Film.class);
         assertEquals(HttpStatus.BAD_REQUEST, entity2.getStatusCode());
 
         // дата рождения не может быть в будущем и пустым.
         User notValidBirthday = new User(1L, "dolore","mail@mail.ru","Nick Name",
-                LocalDate.parse("2030-08-20"), Set.of());
+                LocalDate.parse("2030-08-20"), Set.of(), Map.of());
         ResponseEntity<Film> entity3 = template.postForEntity("/users", notValidBirthday,
                 Film.class);
         assertEquals(HttpStatus.BAD_REQUEST, entity3.getStatusCode());
