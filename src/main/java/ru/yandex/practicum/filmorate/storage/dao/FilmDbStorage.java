@@ -106,8 +106,9 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
         // если передали список лайков, надо его принять
         if (film.getLikes() != null) {
-              film.getLikes().forEach(filmid ->
-                      likesDbStorage.updateLikes(film.getId(),film.getLikes()));
+//              film.getLikes().forEach(filmid ->
+//                      likesDbStorage.updateLikes(film.getId(),film.getLikes()));
+            likesDbStorage.updateLikes(film);
         }
         log.debug("Фильм {} обновлен в хранилище", film);
         return film;

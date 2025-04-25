@@ -11,6 +11,7 @@ import java.util.*;
 
 @Component
 @Slf4j
+//@Primary
 public class InMemoryUserStorage implements UserStorage {
 
     static final Map<Long, User> users = new HashMap<>();

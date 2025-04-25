@@ -108,8 +108,9 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
 //        if (rowUpdated == 0) throw new NotFoundException("Пользователь с id = " + user.getId() + " не найден");
 
         if (user.getFriends() != null) {
-            user.getFriends().forEach(friendId ->
-                    friendsDbStorage.updateFriends(user.getId(), user.getFriends()));
+//            user.getFriends().forEach(friendId ->
+//                    friendsDbStorage.updateFriends(user.getId(), user.getFriends()));
+            friendsDbStorage.updateFriends(user);
         }
 
         log.debug("Пользователь {} обновлен в хранилище", user);
