@@ -16,9 +16,8 @@ import java.util.stream.Collectors;
 public class LikesDbStorage extends BaseDbStorage<Likes> {
 
     private static final String FIND_ALL_LIKES_QUERY = "SELECT * FROM likes WHERE film_id = ?";
-    private static final String CREATE_FRIENDS_ID_QUERY = "INSERT INTO likes (user_id, film_id) VALUES (?, ?)";
-    private static final String DELETE_FRIENDS_ID_QUERY = "DELETE FROM likes WHERE like_id = ?";
-
+    private static final String CREATE_LIKES_ID_QUERY = "INSERT INTO likes (user_id, film_id) VALUES (?, ?)";
+    private static final String DELETE_LIKES_ID_QUERY = "DELETE FROM likes WHERE user_id = ? AND film_id = ?";
 
     public LikesDbStorage(JdbcTemplate jdbc, RowMapper<Likes> mapper) {
         super(jdbc, mapper);
@@ -32,28 +31,33 @@ public class LikesDbStorage extends BaseDbStorage<Likes> {
                 .collect(Collectors.toSet());
     }
 
+
+    public void addLikes(long filmId, long userId) {
+        insert(CREATE_LIKES_ID_QUERY,userId,filmId);
+    }
+
+    public void delLikes(long filmId, long userId) {
+        delete(DELETE_LIKES_ID_QUERY,userId,filmId);
+    }
+
     // обновляем список лайков фильма - сначала зачищаем весь список лайков данного фильма
     // и вне зависимости от рзультата, заново  записываем ноые id пользователей поставивших лайки
-//    public void updateLikes(long filmId, Set<Long> likes) {
-//        delete(DELETE_FRIENDS_ID_QUERY,filmId);
-//        likes.forEach(id -> insert(CREATE_FRIENDS_ID_QUERY, id, filmId));
-//    }
     public void updateLikes(Film film) {
 
         // это "старый" списко лайков
         List<Likes> oldLikes = findMany(FIND_ALL_LIKES_QUERY, film.getId());
 
-        // ассиметричная разница старого списка пользователей и нового - даст списко лайков на уделние
-        List<Likes> LikesToDelete = oldLikes.stream()
-                .filter(l -> !film.getLikes().contains(l.getUserId()))
-                .toList();
-        // удаляю лайки пользователей из таблицы
-        LikesToDelete.forEach(l -> delete(DELETE_FRIENDS_ID_QUERY,l.getId()));
-
         // мноджество пользователей, которые ранее поставили лайки этому фильму
         Set<Long> oldLikesId = oldLikes.stream()
                 .map(Likes::getUserId)
                 .collect(Collectors.toSet());
+        // ассиметричная разница старого списка пользователей и нового - даст списко лайков на уделние
+        Set<Long> idLikesToDelete = oldLikesId.stream()
+                .filter(e -> !film.getLikes().contains(e))
+                .collect(Collectors.toSet());
+
+        // удаляю лайки пользователей из таблицы
+        idLikesToDelete.forEach(e -> delete(DELETE_LIKES_ID_QUERY, e, film.getId()));
 
         // ассиметричная разница множества пользователей - даст списко id на добавление
         Set<Long> idLikesToAdd = film.getLikes().stream()
@@ -61,7 +65,7 @@ public class LikesDbStorage extends BaseDbStorage<Likes> {
                 .collect(Collectors.toSet());
 
         // добавляю новые id в таблицу лайков
-        idLikesToAdd.forEach(id -> insert(CREATE_FRIENDS_ID_QUERY, id, film.getId()));
+        idLikesToAdd.forEach(id -> insert(CREATE_LIKES_ID_QUERY, id, film.getId()));
     }
 
 }

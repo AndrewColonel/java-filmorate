@@ -16,4 +16,9 @@ public interface FilmStorage {
 
     // обновление фильма
     Film update(Film newFilm);
+
+    void addLikes(long filmId, long userId);
+
+    void delLikes(long filmId, long userId);
+
 }

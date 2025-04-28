@@ -76,6 +76,14 @@ public class InMemoryFilmStorage implements FilmStorage {
         throw new NotFoundException("Фильм с id = " + newFilm.getId() + " не найден");
     }
 
+    public  void addLikes(long filmId, long userId) {
+
+    }
+
+    public void delLikes(long filmId, long userId) {
+
+    }
+
     // вспомогательный метод валидации экземпляра фильма
     private boolean isNotValid(Film film) {
         return (film.getDescription() != null)

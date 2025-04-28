@@ -58,9 +58,9 @@ public class BaseDbStorage<T> {
         }
     }
 
-    public void delete(String query, long id) {
+    public void delete(String query, Object... params) {
 //        int rowsDeleted =
-                jdbc.update(query, id);
+                jdbc.update(query, params);
 //        return rowsDeleted > 0;
     }
 

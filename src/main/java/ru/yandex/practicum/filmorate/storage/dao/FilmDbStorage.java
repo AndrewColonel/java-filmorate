@@ -116,6 +116,14 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
     }
 
+    public  void addLikes(long filmId, long userId) {
+        likesDbStorage.addLikes(filmId, userId);
+    }
+
+    public void delLikes(long filmId, long userId) {
+        likesDbStorage.delLikes(filmId, userId);
+    }
+
     // вспомогательный метод валидации экземпляра фильма
     private boolean isNotValid(Film film) {
         return (film.getDescription() != null)

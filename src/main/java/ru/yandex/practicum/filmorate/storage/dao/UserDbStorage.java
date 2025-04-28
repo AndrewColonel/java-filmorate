@@ -46,12 +46,12 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
 
     @Override
     public User findUserById(long id) {
-     // получили объект пользователь из базы и добавили списко друзей
-     User user =  findOne(FIND_BY_ID_QUERY, id).orElseThrow(
-             () -> new NotFoundException(String.format("Пользователя с ID %d не существует.", id)));
+        // получили объект пользователь из базы и добавили списко друзей
+        User user = findOne(FIND_BY_ID_QUERY, id).orElseThrow(
+                () -> new NotFoundException(String.format("Пользователя с ID %d не существует.", id)));
 
-     user.setFriends(friendsDbStorage.findAlLfriends(id));
-     return user;
+        user.setFriends(friendsDbStorage.findAlLfriends(id));
+        return user;
     }
 
     @Override
@@ -99,7 +99,7 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
         }
 
 //        long rowUpdated =
-                update(UPDATE_QUERY,
+        update(UPDATE_QUERY,
                 user.getLogin(),
                 user.getEmail(),
                 user.getName(),
@@ -117,8 +117,15 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
         return user;
     }
 
+    @Override
+    public void addFriend(long userId, long friendId) {
+        friendsDbStorage.addFriend(userId,friendId);
+    }
 
-
+    @Override
+    public void delFriend(long userId, long friendId) {
+        friendsDbStorage.delFriend(userId,friendId);
+    }
 
     // вспомогательный метод валидации экземпляра пользователя
     private boolean isNotValid(User user) {

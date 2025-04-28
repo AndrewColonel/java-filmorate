@@ -45,9 +45,10 @@ public class UserService {
         } else {
             log.debug("Для пользователя с ID {} не удалось добавить в друзья ID {}", userId, friendId);
         }
-        // в другой реализации можно\нужно обновлять только таблицу друзей. а не всего пользователя
-        // это минимальное изменение сервиса позволит использовть старый сервис - InMemory
-        return userStorage.update(user);
+
+        userStorage.addFriend(userId,friendId);
+        userStorage.addFriend(friendId,userId);
+        return user;
     }
 
     // удаляем друзей
@@ -60,9 +61,10 @@ public class UserService {
         } else {
             log.debug("Для пользователя с ID {} не удалось удалить из друзей {}", userId, friendId);
         }
-        // в другой реализации можно\нужно обновлять только таблицу друзей. а не всего пользователя
-        // это минимальное изменение сервиса позволит использовть старый сервис - InMemory
-        return userStorage.update(user);
+
+        userStorage.delFriend(userId,friendId);
+        userStorage.delFriend(friendId,userId);
+        return user;
     }
 
     // возвращает список друзей

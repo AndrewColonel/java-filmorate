@@ -46,9 +46,8 @@ public class FilmService {
         } else {
             log.debug("Поставить лайк для фильма {} от пользователя {} не удалось}", filmId, userId);
         }
-        // в другой реализации можно\нужно обновлять только таблицу films. а не весь объект фильм
-        // это минимальное изменение сервиса позволит использовть старый сервис - InMemory
-        return filmStorage.update(film);
+        filmStorage.addLikes(filmId, userId);
+        return film;
     }
 
     // пользователь удаляет лайк.
@@ -62,9 +61,8 @@ public class FilmService {
         } else {
             log.debug("Для фильма {} не удален лайк пользователя {}", filmId, userId);
         }
-        // в другой реализации можно\нужно обновлять только таблицу films. а не весь объект фильм
-        // это минимальное изменение сервиса позволит использовть старый сервис - InMemory
-        return filmStorage.update(film);
+        filmStorage.delLikes(filmId, userId);
+        return film;
     }
 
     // возвращает список из первых `count` фильмов по количеству лайков.
