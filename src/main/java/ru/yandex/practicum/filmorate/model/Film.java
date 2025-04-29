@@ -34,13 +34,15 @@ public class Film {
     @NotNull
     LocalDate releaseDate;
 
-    // свойство likes в классе abkmvs,
+    // свойство likes в классе фильмы,
     // будет содержать список уникальных id пользователей поставивших лайк
     Set<Long> likes;
 
+    // свойство genres будет содержать список идентификаторов жанров
+    Set<Genres> genres;
 
     // идентификатор рейтинга фильмов
-    int mpa;
+    Mpa mpa;
 }
 
 

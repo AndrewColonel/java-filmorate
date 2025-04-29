@@ -2,8 +2,10 @@ package ru.yandex.practicum.filmorate.storage.inmemory;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
@@ -14,26 +16,26 @@ import java.util.*;
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
 
-    private final Map<Long, Film> films = new HashMap<>();
+    private final Map<Long, FilmDto> films = new HashMap<>();
 
     // получение всех фильмов
     @Override
-    public Collection<Film> findAll() {
+    public Collection<FilmDto> findAll() {
         log.trace("Получение списка всех фильмов.");
         return films.values();
     }
 
     // поиск фильмов по ID
     @Override
-    public Film findFilmById(long id) {
-        Film film = films.get(id);
-        if (film == null) throw new NotFoundException(String.format("Фильма с ID %d не найдено", id));
-        return film;
+    public FilmDto findFilmById(long id) {
+        FilmDto filmDto = films.get(id);
+        if (filmDto == null) throw new NotFoundException(String.format("Фильма с ID %d не найдено", id));
+        return filmDto;
     }
 
     // добавление фильма
     @Override
-    public Film create(Film film) {
+    public FilmDto create(Film film) {
         log.trace("Начата обработка данных для создания нового фильма.");
         if (isNotValid(film)) {
             log.debug("фильм {} не прошел валидацию при создании", film);
@@ -42,14 +44,14 @@ public class InMemoryFilmStorage implements FilmStorage {
         film.setId(getNextId());
         // при создании c lombok контрсутором список остался null- необходимо создать пустой список
         if (film.getLikes() == null) film.setLikes(new HashSet<>());
-        films.put(film.getId(), film);
+        films.put(film.getId(), FilmMapper.mapToFilmDto(film));
         log.debug("Фильм {} добавлен в хранилище", film);
-        return film;
+        return FilmMapper.mapToFilmDto(film);
     }
 
     // обновление фильма
     @Override
-    public Film update(Film newFilm) {
+    public FilmDto update(Film newFilm) {
         log.trace("Начата обработка данных для Обновления информации об имеющемся фильме.");
         if (newFilm.getId() == null) {
             log.error("не указан ID при обновлении для фильма {}", newFilm);
@@ -60,7 +62,7 @@ public class InMemoryFilmStorage implements FilmStorage {
                 log.debug("фильм {} не прошел валидацию при обновлении", newFilm);
                 throw new ValidationException("Неверные данные о фильме");
             }
-            Film oldFilm = films.get(newFilm.getId());
+            FilmDto oldFilm = films.get(newFilm.getId());
             oldFilm.setName(newFilm.getName());
             oldFilm.setDescription(newFilm.getDescription());
             oldFilm.setReleaseDate(newFilm.getReleaseDate());

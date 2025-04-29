@@ -14,6 +14,8 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -119,12 +121,26 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
 
     @Override
     public void addFriend(long userId, long friendId) {
-        friendsDbStorage.addFriend(userId,friendId);
+        friendsDbStorage.addFriend(userId, friendId);
     }
 
     @Override
     public void delFriend(long userId, long friendId) {
-        friendsDbStorage.delFriend(userId,friendId);
+        friendsDbStorage.delFriend(userId, friendId);
+    }
+
+    public Set<Long> getConfirmedFriendsIdList(long id) {
+       return friendsDbStorage.findAlLfriends(id).stream()
+                .filter(friendId -> friendsDbStorage.findAlLfriends(friendId).contains(id))
+                .collect(Collectors.toSet());
+
+    }
+
+    public List<User> getConfirmedFriendsLisr(long id) {
+                return getConfirmedFriendsIdList(id).stream()
+                .map(this::findUserById)
+                .toList();
+
     }
 
     // вспомогательный метод валидации экземпляра пользователя

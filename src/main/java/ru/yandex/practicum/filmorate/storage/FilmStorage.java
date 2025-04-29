@@ -1,21 +1,22 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
 
 public interface FilmStorage {
     // получение всех фильмов
-    Collection<Film> findAll();
+    Collection<FilmDto> findAll();
 
     // поиск фильмов по ID
-    public Film findFilmById(long id);
+    public FilmDto findFilmById(long id);
 
     // добавление фильма
-    Film create(Film film);
+    FilmDto create(Film film);
 
     // обновление фильма
-    Film update(Film newFilm);
+    FilmDto update(Film newFilm);
 
     void addLikes(long filmId, long userId);
 

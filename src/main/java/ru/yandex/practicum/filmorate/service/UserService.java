@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -46,8 +47,11 @@ public class UserService {
             log.debug("Для пользователя с ID {} не удалось добавить в друзья ID {}", userId, friendId);
         }
 
-        userStorage.addFriend(userId,friendId);
-        userStorage.addFriend(friendId,userId);
+
+        // дружба должна стать односторонней. Теперь, если пользователь отправляет заявку в друзья,
+        // он добавляет другого человека в свой список друзей, но сам в его список не попадает
+        //  userStorage.addFriend(friendId,userId);
+        userStorage.addFriend(userId, friendId);
         return user;
     }
 
@@ -62,8 +66,8 @@ public class UserService {
             log.debug("Для пользователя с ID {} не удалось удалить из друзей {}", userId, friendId);
         }
 
-        userStorage.delFriend(userId,friendId);
-        userStorage.delFriend(friendId,userId);
+        userStorage.delFriend(userId, friendId);
+//        userStorage.delFriend(friendId, userId);
         return user;
     }
 
@@ -77,7 +81,7 @@ public class UserService {
 
     // возвращаем список друзей, общих с другим пользователем
     public Collection<User> getCommonFriends(long userId, long otherId) {
-        log.trace("Вызван метод по вормированию списка общих друзей для пользователей с ID {} и {}", userId, otherId);
+        log.trace("Вызван метод по формированию списка общих друзей для пользователей с ID {} и {}", userId, otherId);
         Collection<Long> otherUserFriendList = getFriendsList(otherId);
         return getFriendsList(userId).stream()
                 .filter(otherUserFriendList::contains)

@@ -92,6 +92,7 @@ public class InMemoryUserStorage implements UserStorage {
     public void delFriend(long userId, long friendId) {
     }
 
+
     // вспомогательный метод валидации экземпляра пользователя
     private boolean isNotValid(User user) {
         // логин не может быть пустым - проверено через аннотации и содержать пробелы

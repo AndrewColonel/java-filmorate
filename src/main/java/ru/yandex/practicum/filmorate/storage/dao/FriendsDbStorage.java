@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Friends;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,7 +35,6 @@ public class FriendsDbStorage extends BaseDbStorage<Friends> {
     public void addFriend(long userId, long friendId) {
         insert(CREATE_FRIENDS_ID_QUERY, userId, friendId);
     }
-
 
     public void delFriend(long userId, long friendId) {
         delete(DELETE_FRIENDS_ID_QUERY,userId,friendId);
