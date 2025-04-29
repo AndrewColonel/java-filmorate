@@ -40,32 +40,31 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
 
     private final LikesDbStorage likesDbStorage;
     private final MpaDbStorage mpaDbStorage;
+    private final GenreListDbStorage genreListDbStorage;
 
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbc, RowMapper<FilmRequest> mapper,
-                         LikesDbStorage likesDbStorage, MpaDbStorage mpaDbStorage) {
+                         LikesDbStorage likesDbStorage, MpaDbStorage mpaDbStorage, GenreListDbStorage genreListDbStorage) {
         super(jdbc, mapper);
         this.likesDbStorage = likesDbStorage;
         this.mpaDbStorage = mpaDbStorage;
+        this.genreListDbStorage = genreListDbStorage;
     }
 
     @Override
     public List<FilmDto> findAll() {
 
         return findMany(FIND_ALL_QUERY).stream()
+                // используя поток FilmRequest и содержащий rating_id и нахожу MPA, преобразую поток в Film
                 .map(filmRequest ->
                         FilmMapper.mapToFilm(filmRequest, mpaDbStorage.findMpaById(filmRequest.getRatingId())))
+                // добавляем Likes по id фильма
                 .peek(film -> film.setLikes(likesDbStorage.findAllLikes(film.getId())))
+                //добавялем Genres по ID фильма
+                .peek(film -> film.setGenres(genreListDbStorage.findAllFilmGenres(film.getId())))
+                // преобразуб поток в FilmDto
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
-
-
-//        List<FilmRequest> filmRequests = findMany(FIND_ALL_QUERY);
-//        return findMany(FIND_ALL_QUERY).stream()
-//                .peek(film -> {film.setLikes(likesDbStorage.findAllLikes(film.getId()));
-//                    film.setMpa(mpaDbStorage.findMpaById(film.getMpa().));
-//                })
-//                .toList();
     }
 
     @Override
@@ -75,7 +74,7 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
         );
         Film film = FilmMapper.mapToFilm(filmRequest, mpaDbStorage.findMpaById(filmRequest.getRatingId()));
         film.setLikes(likesDbStorage.findAllLikes(id));
-
+        film.setGenres(genreListDbStorage.findAllFilmGenres(film.getId()));
         return FilmMapper.mapToFilmDto(film);
     }
 
@@ -107,6 +106,12 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
 //        if (film.getGenres() == null) film.setGenres(Set.of());
         // при создании фильма список лайки никто не ставил - необходимо создать пустой список
         if (film.getLikes() == null) film.setLikes(new HashSet<>());
+
+        if (film.getGenres() != null) {
+                genreListDbStorage.addGenreList(film);
+        }
+
+
         log.debug("Фильм {} добавлен в хранилище", film);
         return FilmMapper.mapToFilmDto(film);
     }
@@ -136,6 +141,8 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
 //                      likesDbStorage.updateLikes(film.getId(),film.getLikes()));
             likesDbStorage.updateLikes(film);
         }
+
+
         log.debug("Фильм {} обновлен в хранилище", film);
         return FilmMapper.mapToFilmDto(film);
 

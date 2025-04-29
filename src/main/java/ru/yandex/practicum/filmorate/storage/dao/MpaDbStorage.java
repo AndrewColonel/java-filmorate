@@ -15,8 +15,6 @@ public class MpaDbStorage extends BaseDbStorage<Mpa> {
 
     private static final String FIND_ALL_MPA_QUERY = "SELECT * FROM rating";
     private static final String FIND_BY_ID_MPA_QUERY = "SELECT * FROM rating WHERE rating_id = ?";
-    private static final String CREATE_MPA_QUERY = "INSERT INTO (rating_id, rating_name)" +
-            "VALUES (?, ?)";
 
     public MpaDbStorage(JdbcTemplate jdbc, RowMapper<Mpa> mapper) {
         super(jdbc, mapper);
@@ -32,11 +30,4 @@ public class MpaDbStorage extends BaseDbStorage<Mpa> {
         );
     }
 
-//    public void create(int ratingId, String ratingName) {
-//        insert(CREATE_MPA_QUERY,ratingId,ratingName);
-//    }
-//
-//    public void update(int ratingId, String ratingName) {
-//        update();
-//    }
 }

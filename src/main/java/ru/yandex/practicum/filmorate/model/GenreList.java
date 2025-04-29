@@ -12,6 +12,6 @@ public class GenreList {
 
     Long id;
     Long filmId; // идентификатор фильма
-    Long genreId; // идентификатор жанра фильма
-
+    int genreId; // идентификатор жанра фильма
+    String genreName;
 }

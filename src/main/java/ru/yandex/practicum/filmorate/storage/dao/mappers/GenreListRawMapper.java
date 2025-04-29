@@ -14,7 +14,8 @@ public class GenreListRawMapper implements RowMapper<GenreList> {
         return GenreList.builder()
                 .id(resultSet.getLong("genre_list_id"))
                 .filmId(resultSet.getLong("film_id"))
-                .genreId(resultSet.getLong("genre_id"))
+                .genreId(resultSet.getInt("genre_id"))
+                .genreName(resultSet.getString("genre_name"))
                 .build();
     }
 }
