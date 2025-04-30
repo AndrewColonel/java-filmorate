@@ -8,37 +8,48 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.GenreList;
 import ru.yandex.practicum.filmorate.model.Genres;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
-public class GenreListDbStorage extends BaseDbStorage<GenreList>{
+public class GenreListDbStorage extends BaseDbStorage<GenreList> {
 
     private static final String FIND_ALL_BENRELIST_QUERY = "SELECT gl.genre_list_id, gl.film_id, gl.genre_id, " +
             "g.genre_name  " +
             "FROM genre_list AS gl LEFT OUTER JOIN  genre AS g ON gl.genre_id = g.genre_id WHERE film_id = ?";
-//    private static final String FIND_BY_ID_MPA_QUERY = "SELECT * FROM rating WHERE rating_id = ?";
+//    private static final String UPDATE_GENRELIST_QUERY = "UPDATE genre_list SET genre_id = ? WHERE film_id = ?";
     private static final String CREATE_GENRELIST_QUERY = "INSERT INTO genre_list (film_id, genre_id)" +
             "VALUES (?, ?)";
+    private static final String DELETE_ALL_GENRELIST_ID_QUERY = "DELETE FROM genre_list WHERE film_id = ?";
 
     public GenreListDbStorage(JdbcTemplate jdbc, RowMapper<GenreList> mapper) {
         super(jdbc, mapper);
     }
 
     public Set<Genres> findAllFilmGenres(long id) {
-         return  findMany(FIND_ALL_BENRELIST_QUERY,id).stream()
-                 .map(genreList -> Genres.builder()
-                         .genreId(genreList.getGenreId())
-                         .genreName(genreList.getGenreName())
-                         .build())
-                 .collect(Collectors.toSet());
+        return findMany(FIND_ALL_BENRELIST_QUERY, id).stream()
+                .map(genreList -> Genres.builder()
+                        .genreId(genreList.getGenreId())
+                        .genreName(genreList.getGenreName())
+                        .build())
+                .collect(Collectors.toSet());
     }
 
     public void addGenreList(Film film) {
-        film.getGenres().forEach(g ->  insert(CREATE_GENRELIST_QUERY, film.getId(),g.getGenreId()));
+        // объект film уже проверен на содержимое Genres
+        film.getGenres().forEach(g -> insert(CREATE_GENRELIST_QUERY, film.getId(), g.getGenreId()));
 
+    }
+
+//    public void updateGenreList(Film film) {
+//        // объект film уже проверен на содержимое Genres
+//        film.getGenres().forEach(g -> update(UPDATE_GENRELIST_QUERY, g.getGenreId(), film.getId()));
+//    }
+
+    public void deleteGenreList(Film film) {
+        // объект film уже проверен на содержимое Genres
+        delete(DELETE_ALL_GENRELIST_ID_QUERY, film.getId());
     }
 
 }

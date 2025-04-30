@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.model.FilmRequest;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,7 @@ public final class FilmMapper {
     }
 
     public static FilmDto mapToFilmDto(Film film) {
-        return FilmDto.builder()
+        FilmDto filmDto = FilmDto.builder()
                 .id(film.getId())
                 .name(film.getName())
                 .duration(film.getDuration())
@@ -32,10 +33,18 @@ public final class FilmMapper {
                 .releaseDate(film.getReleaseDate())
                 .likes(film.getLikes())
                 .genres(film.getGenres().stream()
-                                .map(GenresMapper::mapToGenresDto)
-                                .collect(Collectors.toSet()))
-                .mpa(Set.of(MpaMapper.mapToDto(film.getMpa())))
+                       //TODO
+//                        .filter(Objects::nonNull)
+
+                        .map(GenresMapper::mapToGenresDto)
+                        .collect(Collectors.toSet()))
+            .mpa(Set.of(MpaMapper.mapToDto(film.getMpa())))
                 .build();
+
+
+         if (film.getMpa().getRatingId() == 0) filmDto.setMpa(Set.of());
+
+         return filmDto;
     }
 
 

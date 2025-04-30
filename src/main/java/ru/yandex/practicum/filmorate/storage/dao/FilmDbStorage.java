@@ -18,6 +18,9 @@ import java.time.LocalDate;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -36,7 +39,11 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
             "VALUES (?, ?)";
 
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, duration = ?, description = ? , " +
-            "release_date = ?, rating_id = ? WHERE film_id = ?";
+            "release_date = ?, rating_id = ?  WHERE film_id = ?";
+
+
+//    private static final String UPDATE_RATING_MPA_QUERY = "UPDATE films SET rating_id = ?" +
+//            "WHERE film_id = ?";
 
     private final LikesDbStorage likesDbStorage;
     private final MpaDbStorage mpaDbStorage;
@@ -85,32 +92,40 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
             log.debug("фильм {} не прошел валидацию при создании", film);
             throw new ValidationException("Неверные данные о фильме");
         }
+
+        log.debug("Разбираем НОВЫЙ фильм {} ", film);
+
         long id = insert(CREATE_QUERY,
                 film.getName(),
                 film.getDuration(),
                 film.getDescription(),
                 film.getReleaseDate(),
                 film.getMpa().getRatingId());
-//                film.getMpa().stream().findFirst().map(Mpa::getRatingId));
+
         film.setId(id);
 
-//        if (film.getMpa() != null) mpaDbStorage.create(film.getMpa().getRatingId()
-//                ,film.getMpa().getRatingName());
+//        if (Objects.nonNull(film.getMpa())) {
+//            if (film.getMpa().getRatingId() != 0)
+//                update(UPDATE_RATING_MPA_QUERY,film.getMpa().getRatingId(),id);
+//        }
 
 
-        //TODO
-//        film.getGenres().forEach(genreId ->
-//                insert(CREATE_GENRE_LIST, id, genreId));
-
-//        if (film.getMpa() == null) film.setMpa(new Mpa(0,null));
-//        if (film.getGenres() == null) film.setGenres(Set.of());
-        // при создании фильма список лайки никто не ставил - необходимо создать пустой список
-        if (film.getLikes() == null) film.setLikes(new HashSet<>());
-
-        if (film.getGenres() != null) {
-                genreListDbStorage.addGenreList(film);
+        if (Objects.nonNull(film.getLikes())) {
+            likesDbStorage.updateLikes(film);
+        } else {
+            film.setLikes(new HashSet<>());
         }
 
+
+        if (Objects.nonNull(film.getGenres())) {
+            // проверяем что внутри списка
+            film.setGenres(film.getGenres().stream()
+                    .filter(genres -> genres.getGenreId() != 0)
+                    .collect(Collectors.toSet()));
+            genreListDbStorage.addGenreList(film);
+        } else {
+            film.setGenres(Set.of());
+        }
 
         log.debug("Фильм {} добавлен в хранилище", film);
         return FilmMapper.mapToFilmDto(film);
@@ -127,26 +142,50 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
             log.debug("фильм {} не прошел валидацию при обновлении", film);
             throw new ValidationException("Неверные данные о фильме");
         }
+
+        log.debug("Разбираем ОБНОВЛЕНИЕ фильм {} ", film);
+
         update(UPDATE_QUERY,
                 film.getName(),
                 film.getDuration(),
                 film.getDescription(),
                 film.getReleaseDate(),
                 film.getMpa().getRatingId(),
-//                film.getMpa().stream().findFirst().map(Mpa::getRatingId),
+
                 film.getId());
+
+//        if (Objects.nonNull(film.getMpa())) {
+//            if (film.getMpa().getRatingId() != 0)
+//                update(UPDATE_RATING_MPA_QUERY, film.getMpa().getRatingId(), film.getId());
+//        }
+
+
         // если передали список лайков, надо его принять
-        if (film.getLikes() != null) {
-//              film.getLikes().forEach(filmid ->
-//                      likesDbStorage.updateLikes(film.getId(),film.getLikes()));
+        if (Objects.nonNull(film.getLikes())) {
             likesDbStorage.updateLikes(film);
+        } else {
+            likesDbStorage.deleteAllLikes(film);
+            film.setLikes(new HashSet<>());
+        }
+
+
+        if (Objects.nonNull(film.getGenres())) {
+            // если с обновлением пришли новые жанры, удаляю старые, их немного
+            genreListDbStorage.deleteGenreList(film);
+            // проверяем что внутри списка нет жанров с id = 0
+            film.setGenres(film.getGenres().stream()
+                    .filter(genres -> genres.getGenreId() != 0)
+                    .collect(Collectors.toSet()));
+            // добавляем новые жанры
+            genreListDbStorage.addGenreList(film);
+        } else {
+            genreListDbStorage.deleteGenreList(film);
+            film.setGenres(Set.of());
         }
 
 
         log.debug("Фильм {} обновлен в хранилище", film);
         return FilmMapper.mapToFilmDto(film);
-
-
     }
 
     public void addLikes(long filmId, long userId) {

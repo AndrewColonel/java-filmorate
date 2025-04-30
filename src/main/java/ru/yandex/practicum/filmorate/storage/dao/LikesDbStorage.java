@@ -18,6 +18,7 @@ public class LikesDbStorage extends BaseDbStorage<Likes> {
     private static final String FIND_ALL_LIKES_QUERY = "SELECT * FROM likes WHERE film_id = ?";
     private static final String CREATE_LIKES_ID_QUERY = "INSERT INTO likes (user_id, film_id) VALUES (?, ?)";
     private static final String DELETE_LIKES_ID_QUERY = "DELETE FROM likes WHERE user_id = ? AND film_id = ?";
+    private static final String DELETE_ALL_LIKES_ID_QUERY = "DELETE FROM likes WHERE film_id = ?";
 
     public LikesDbStorage(JdbcTemplate jdbc, RowMapper<Likes> mapper) {
         super(jdbc, mapper);
@@ -68,4 +69,9 @@ public class LikesDbStorage extends BaseDbStorage<Likes> {
         idLikesToAdd.forEach(id -> insert(CREATE_LIKES_ID_QUERY, id, film.getId()));
     }
 
+
+
+    public void deleteAllLikes(Film film) {
+        delete(DELETE_ALL_LIKES_ID_QUERY,film.getId());
+    }
 }
