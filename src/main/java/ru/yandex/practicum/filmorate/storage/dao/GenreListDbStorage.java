@@ -42,11 +42,6 @@ public class GenreListDbStorage extends BaseDbStorage<GenreList> {
 
     }
 
-//    public void updateGenreList(Film film) {
-//        // объект film уже проверен на содержимое Genres
-//        film.getGenres().forEach(g -> update(UPDATE_GENRELIST_QUERY, g.getGenreId(), film.getId()));
-//    }
-
     public void deleteGenreList(Film film) {
         // объект film уже проверен на содержимое Genres
         delete(DELETE_ALL_GENRELIST_ID_QUERY, film.getId());

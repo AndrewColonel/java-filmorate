@@ -27,7 +27,7 @@ public final class FilmMapper {
     }
 
     public static FilmDto mapToFilmDto(Film film) {
-        FilmDto filmDto = FilmDto.builder()
+        return  FilmDto.builder()
                 .id(film.getId())
                 .name(film.getName())
                 .duration(film.getDuration())
@@ -35,20 +35,11 @@ public final class FilmMapper {
                 .releaseDate(film.getReleaseDate())
                 .likes(film.getLikes())
                 .genres(film.getGenres().stream()
-
-//                        .filter(Objects::nonNull)
-
                         .map(GenresMapper::mapToGenresDto)
                         .sorted(Comparator.comparingInt(GenresDto::getId))
                         .collect(Collectors.toCollection(LinkedHashSet::new)))
             .mpa((MpaMapper.mapToDto(film.getMpa())))
                 .build();
-
-
-//         if (film.getMpa().getId() == 0) filmDto.setMpa(Set.of());
-
-         return filmDto;
     }
-
 
 }

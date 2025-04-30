@@ -42,7 +42,6 @@ public class Film {
     Set<Genres> genres;
 
     // идентификатор рейтинга фильмов
-
     Mpa mpa;
 }
 

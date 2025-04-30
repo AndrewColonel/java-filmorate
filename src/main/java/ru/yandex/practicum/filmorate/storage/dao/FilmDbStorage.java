@@ -20,40 +20,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
 @Primary
 public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmStorage {
 
-//    private static final String FIND_ALL_QUERY = "SELECT  film_id, name, duration, description, release_date, " +
-//            "rating_name  FROM films AS f LEFT OUTER JOIN rating AS r ON f.rating_id = r.rating_id";
-
     private static final String FIND_ALL_QUERY = "SELECT *  FROM films";
     private static final String FIND_BY_ID_QUERY = "SELECT *  FROM films WHERE film_id = ?";
-
-//    private static final String CREATE_QUERY = "INSERT INTO films " +
-//            "(name, duration, description, release_date, rating_id)" +
-//            "VALUES (?, ?, ?, ?, ?)";
 
     private static final String CREATE_QUERY = "INSERT INTO films " +
             "(rating_id, name, duration, description, release_date)" +
             "VALUES (1, ?, ?, ?, ?)";
 
-
-    //    private static final String UPDATE_QUERY = "UPDATE films SET name = ?, duration = ?, description = ? , " +
-//            "release_date = ?, rating_id = ?  WHERE film_id = ?";
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, duration = ?, description = ? , " +
             "release_date = ? WHERE film_id = ?";
 
     private static final String UPDATE_RATING_MPA_QUERY = "UPDATE films SET rating_id = ?" +
             "WHERE film_id = ?";
-
-
-//    private static final String CREATE_GENRE_LIST = "INSERT INTO genre_list (film_id, genre_id)" +
-//            "VALUES (?, ?)";
-
 
     private final LikesDbStorage likesDbStorage;
     private final MpaDbStorage mpaDbStorage;
@@ -104,12 +88,6 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
             throw new ValidationException("Неверные данные о фильме");
         }
         log.trace("Начато создания нового фильма.");
-//        long id = insert(CREATE_QUERY,
-//                film.getName(),
-//                film.getDuration(),
-//                film.getDescription(),
-//                film.getReleaseDate(),
-//                film.getMpa().getId());
 
         long id = insert(CREATE_QUERY,
                 film.getName(),
@@ -138,13 +116,6 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
 
         log.trace("Передаем фильму список Жанров, если все верно.");
         if (Objects.nonNull(film.getGenres())) {
-            // проверяем что внутри списка
-//            film.getGenres().stream()
-//                    .peek(System.out::println)
-//                    .filter(genres -> genres.getId() <= 0
-//                            || genres.getId() > 6)
-//                    .findFirst().orElseThrow(() ->
-//                            new NotFoundException("Жанр не существует"));
 
             if (film.getGenres().stream()
                     .peek(genres -> log.debug("Жанр {}",genres))
@@ -152,11 +123,6 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
                     || genres.getId() > 6)) {
                 throw new NotFoundException("Жанр не существует");
             }
-
-
-//            film.setGenres(film.getGenres().stream()
-//                    .filter(genres -> genres.getId() != 0)
-//                    .collect(Collectors.toSet()));
 
             genreListDbStorage.addGenreList(film);
         } else {
@@ -179,14 +145,6 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
             throw new ValidationException("Неверные данные о фильме");
         }
         log.trace("Начато обновление фильма.");
-
-//        update(UPDATE_QUERY,
-//                film.getName(),
-//                film.getDuration(),
-//                film.getDescription(),
-//                film.getReleaseDate(),
-//                film.getMpa().getId(),
-//                film.getId());
 
         update(UPDATE_QUERY,
                 film.getName(),
@@ -217,12 +175,6 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
 
         log.trace("Передаем обновленному фильму список Жанров, если все верно.");
         if (Objects.nonNull(film.getGenres())) {
-            // проверяем что внутри списка
-//            film.getGenres().stream()
-//                    .filter(genres -> genres.getId() <= 0
-//                            || genres.getId() > 6)
-//                    .findFirst().orElseThrow(() ->
-//                            new NotFoundException("Жанр не существует"));
 
             if (film.getGenres().stream()
                     .peek(genres -> log.debug("Жанр {}",genres))
@@ -231,37 +183,13 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
                 throw new NotFoundException("Жанр не существует");
             }
 
-
-
-
-
 // если с обновлением пришли новые жанры, удаляю старые, их немного
             genreListDbStorage.deleteGenreList(film);
-//            film.setGenres(film.getGenres().stream()
-//                    .filter(genres -> genres.getId() != 0)
-//                    .collect(Collectors.toSet()));
-
             genreListDbStorage.addGenreList(film);
         } else {
             genreListDbStorage.deleteGenreList(film);
             film.setGenres(Set.of());
         }
-
-
-//        if (Objects.nonNull(film.getGenres())) {
-//            // если с обновлением пришли новые жанры, удаляю старые, их немного
-//            genreListDbStorage.deleteGenreList(film);
-//            // проверяем что внутри списка нет жанров с id = 0
-//            film.setGenres(film.getGenres().stream()
-//                    .filter(genres -> genres.getId() != 0)
-//                    .collect(Collectors.toSet()));
-//            // добавляем новые жанры
-//            genreListDbStorage.addGenreList(film);
-//        } else {
-//            genreListDbStorage.deleteGenreList(film);
-//            film.setGenres(Set.of());
-//        }
-
 
         log.debug("Фильм {} обновлен в хранилище", film);
         return FilmMapper.mapToFilmDto(film);
@@ -283,6 +211,4 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
                 // дата релиза — не раньше 28 декабря 1895 года;
                 || film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28));
     }
-
-
 }

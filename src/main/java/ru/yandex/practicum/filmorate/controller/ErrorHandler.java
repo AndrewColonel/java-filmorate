@@ -38,11 +38,11 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage(), "Произошла непредвиденная ошибка.");
     }
 
-//
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    public ErrorResponse handleRuntimeException(final RuntimeException e) {
-//        return new ErrorResponse(e.getMessage(), "Произошла непредвиденная ошибка.");
-//    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleRuntimeException(final RuntimeException e) {
+        return new ErrorResponse(e.getMessage(), "Произошла непредвиденная ошибка.");
+    }
 
 }
