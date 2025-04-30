@@ -10,6 +10,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -32,7 +33,7 @@ class FilmorateApplicationTests {
     void shouldCreateNewFilm() {
         // Создаем запись о яильме, котроая пройдет валидацию
         Film film = new Film(1L, "nisi eiusmod", 100,"adipisicing",
-                LocalDate.parse("1967-03-25"), Set.of());
+                LocalDate.parse("1967-03-25"), Set.of(), Set.of(),new Mpa(1, "htqnbyu"));
         // используем  метод postForEntity() TestRestTemplate, чтобы сделать запрос POST к эндпоинту /films
         ResponseEntity<Film> entity = template.postForEntity("/films", film, Film.class);
         assertEquals(HttpStatus.OK, entity.getStatusCode());

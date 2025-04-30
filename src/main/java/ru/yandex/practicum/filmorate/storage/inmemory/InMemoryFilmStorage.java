@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.time.LocalDate;
@@ -27,10 +28,17 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     // поиск фильмов по ID
     @Override
-    public FilmDto findFilmById(long id) {
+    public FilmDto findFilmDtoById(long id) {
         FilmDto filmDto = films.get(id);
         if (filmDto == null) throw new NotFoundException(String.format("Фильма с ID %d не найдено", id));
         return filmDto;
+    }
+
+    @Override
+    public Film findFilmById(long id) {
+        return new Film(1L, "nisi eiusmod", 100,"adipisicing",
+                LocalDate.parse("1967-03-25"), Set.of(),
+                Set.of(),new Mpa(1, "htqnbyu"));
     }
 
     // добавление фильма

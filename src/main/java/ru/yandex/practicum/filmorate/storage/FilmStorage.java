@@ -10,8 +10,8 @@ public interface FilmStorage {
     Collection<FilmDto> findAll();
 
     // поиск фильмов по ID
-    public FilmDto findFilmById(long id);
-
+    public FilmDto findFilmDtoById(long id);
+    public Film findFilmById(long id);
 
     // добавление фильма
     FilmDto create(Film film);

@@ -7,19 +7,19 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dto.GenresDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmRequest;
+import ru.yandex.practicum.filmorate.model.Genres;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.time.LocalDate;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -69,7 +69,7 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
     }
 
     @Override
-    public FilmDto findFilmById(long id) {
+    public FilmDto findFilmDtoById(long id) {
         FilmRequest filmRequest = findOne(FIND_BY_ID_QUERY, id).orElseThrow(
                 () -> new NotFoundException(String.format("Фильма с ID %d не найдено", id))
         );
@@ -78,6 +78,24 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
         film.setGenres(genreListDbStorage.findAllFilmGenres(film.getId()));
         return FilmMapper.mapToFilmDto(film);
     }
+
+
+    @Override
+    public Film findFilmById(long id) {
+        FilmRequest filmRequest = findOne(FIND_BY_ID_QUERY, id).orElseThrow(
+                () -> new NotFoundException(String.format("Фильма с ID %d не найдено", id))
+        );
+        Film film = FilmMapper.mapToFilm(filmRequest, mpaDbStorage.findMpaById(filmRequest.getRatingId()));
+        film.setLikes(likesDbStorage.findAllLikes(id));
+        film.setGenres(
+                genreListDbStorage.findAllFilmGenres(film.getId()).stream()
+                        .sorted(Comparator.comparingInt(Genres::getId))
+                        .collect(Collectors.toCollection(LinkedHashSet::new))
+                );
+        return film;
+    }
+
+
 
     @Override
     public FilmDto create(Film film) {

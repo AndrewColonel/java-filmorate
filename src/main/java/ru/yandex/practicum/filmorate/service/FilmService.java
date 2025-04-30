@@ -28,7 +28,7 @@ public class FilmService {
         return filmStorage.findAll();
     }
 
-    public FilmDto findFilmById(long id) {
+    public Film findFilmById(long id) {
         return filmStorage.findFilmById(id);
     }
 
@@ -45,7 +45,7 @@ public class FilmService {
     public FilmDto addLikes(long filmId, long userId) {
         log.trace("Вызван метод добавления Лайка для фильма с ID {} от пользователя с ID {}", filmId, userId);
         // успешный вызов метода поиска фильма и пользователя по ID гарантирует их существование
-        FilmDto filmDto = filmStorage.findFilmById(filmId);
+        FilmDto filmDto = filmStorage.findFilmDtoById(filmId);
         User user = userStorage.findUserById(userId);
         if (filmDto.getLikes().add(userId)) {
             log.debug("Для фильма {} добавлен лайк от пользователя {}", filmId, userId);
@@ -60,7 +60,7 @@ public class FilmService {
     public FilmDto delLikes(long filmId, long userId) {
         log.trace("Вызван метод удаления  Лайка для фильма с ID {} от пользователя с ID {}", filmId, userId);
         // успешный вызов метода поиска фильма и пользователя по ID гарантирует их существование
-        FilmDto filmDto = filmStorage.findFilmById(filmId);
+        FilmDto filmDto = filmStorage.findFilmDtoById(filmId);
         User user = userStorage.findUserById(userId);
         if (filmDto.getLikes().remove(userId)) {
             log.debug("Удален лайк для фильма {} от пользователя {}", filmId, userId);
