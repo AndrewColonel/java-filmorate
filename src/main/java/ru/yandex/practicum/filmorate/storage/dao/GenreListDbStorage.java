@@ -31,7 +31,7 @@ public class GenreListDbStorage extends BaseDbStorage<GenreList> {
         return findMany(FIND_ALL_BENRELIST_QUERY, id).stream()
                 .map(genreList -> Genres.builder()
                         .id(genreList.getGenreId())
-                        .genreName(genreList.getGenreName())
+                        .name(genreList.getGenreName())
                         .build())
                 .collect(Collectors.toSet());
     }

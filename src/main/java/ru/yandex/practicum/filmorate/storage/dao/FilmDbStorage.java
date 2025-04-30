@@ -38,8 +38,8 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
 //            "VALUES (?, ?, ?, ?, ?)";
 
     private static final String CREATE_QUERY = "INSERT INTO films " +
-            "(name, duration, description, release_date)" +
-            "VALUES (?, ?, ?, ?)";
+            "(rating_id, name, duration, description, release_date)" +
+            "VALUES (1, ?, ?, ?, ?)";
 
 
     //    private static final String UPDATE_QUERY = "UPDATE films SET name = ?, duration = ?, description = ? , " +
@@ -117,6 +117,9 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
                 film.getDescription(),
                 film.getReleaseDate());
         film.setId(id);
+
+        log.debug("Создана запись фильм {}", film);
+
         log.trace("Присваиваем фильму лайки, если есть ");
         if (Objects.nonNull(film.getLikes())) {
             likesDbStorage.updateLikes(film);
@@ -192,7 +195,7 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
                 film.getReleaseDate(),
                 film.getId());
 
-
+        log.debug("Обновлена запись фильм {}", film);
 
         log.trace("Присваиваем обновленному фильму лайки, если есть ");
         // если передали список лайков, надо его принять

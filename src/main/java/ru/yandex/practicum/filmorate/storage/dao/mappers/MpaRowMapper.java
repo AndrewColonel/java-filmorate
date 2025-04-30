@@ -13,7 +13,7 @@ public class MpaRowMapper implements RowMapper<Mpa> {
     public Mpa mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         return Mpa.builder()
                 .id(resultSet.getInt("rating_id"))
-                .ratingName(resultSet.getString("rating_name"))
+                .name(resultSet.getString("rating_name"))
                 .build();
     }
 
