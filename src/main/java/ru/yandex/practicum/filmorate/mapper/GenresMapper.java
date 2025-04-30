@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.model.Genres;
 public final class GenresMapper {
     public static GenresDto mapToGenresDto(Genres genres) {
         return GenresDto.builder()
-                .genreId(genres.getGenreId())
+                .id(genres.getId())
                 .build();
     }
 

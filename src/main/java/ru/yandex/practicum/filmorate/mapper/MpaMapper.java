@@ -7,7 +7,7 @@ public final class MpaMapper {
 
     public static MpaDto mapToDto(Mpa mpa) {
         return  MpaDto.builder()
-                .ratingId(mpa.getRatingId())
+                .id(mpa.getId())
                 .build();
     }
 }

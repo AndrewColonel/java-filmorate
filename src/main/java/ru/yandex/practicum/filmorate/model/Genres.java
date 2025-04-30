@@ -9,6 +9,6 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class Genres {
-    int genreId;
+    int id;
     String genreName;
 }

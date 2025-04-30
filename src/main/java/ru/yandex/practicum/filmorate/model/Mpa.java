@@ -9,6 +9,6 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class Mpa {
-    int ratingId;
+    int id;
     String ratingName;
 }

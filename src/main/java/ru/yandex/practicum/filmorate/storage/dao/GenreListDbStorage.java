@@ -30,7 +30,7 @@ public class GenreListDbStorage extends BaseDbStorage<GenreList> {
     public Set<Genres> findAllFilmGenres(long id) {
         return findMany(FIND_ALL_BENRELIST_QUERY, id).stream()
                 .map(genreList -> Genres.builder()
-                        .genreId(genreList.getGenreId())
+                        .id(genreList.getGenreId())
                         .genreName(genreList.getGenreName())
                         .build())
                 .collect(Collectors.toSet());
@@ -38,7 +38,7 @@ public class GenreListDbStorage extends BaseDbStorage<GenreList> {
 
     public void addGenreList(Film film) {
         // объект film уже проверен на содержимое Genres
-        film.getGenres().forEach(g -> insert(CREATE_GENRELIST_QUERY, film.getId(), g.getGenreId()));
+        film.getGenres().forEach(g -> insert(CREATE_GENRELIST_QUERY, film.getId(), g.getId()));
 
     }
 

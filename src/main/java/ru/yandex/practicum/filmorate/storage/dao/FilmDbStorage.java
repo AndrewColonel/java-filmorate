@@ -100,7 +100,7 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
                 film.getDuration(),
                 film.getDescription(),
                 film.getReleaseDate(),
-                film.getMpa().getRatingId());
+                film.getMpa().getId());
 
         film.setId(id);
 
@@ -120,7 +120,7 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
         if (Objects.nonNull(film.getGenres())) {
             // проверяем что внутри списка
             film.setGenres(film.getGenres().stream()
-                    .filter(genres -> genres.getGenreId() != 0)
+                    .filter(genres -> genres.getId() != 0)
                     .collect(Collectors.toSet()));
             genreListDbStorage.addGenreList(film);
         } else {
@@ -150,7 +150,7 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
                 film.getDuration(),
                 film.getDescription(),
                 film.getReleaseDate(),
-                film.getMpa().getRatingId(),
+                film.getMpa().getId(),
 
                 film.getId());
 
@@ -174,7 +174,7 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
             genreListDbStorage.deleteGenreList(film);
             // проверяем что внутри списка нет жанров с id = 0
             film.setGenres(film.getGenres().stream()
-                    .filter(genres -> genres.getGenreId() != 0)
+                    .filter(genres -> genres.getId() != 0)
                     .collect(Collectors.toSet()));
             // добавляем новые жанры
             genreListDbStorage.addGenreList(film);

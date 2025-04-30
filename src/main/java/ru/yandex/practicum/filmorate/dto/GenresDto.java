@@ -8,5 +8,5 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class GenresDto {
-    int genreId;
+    int id;
 }

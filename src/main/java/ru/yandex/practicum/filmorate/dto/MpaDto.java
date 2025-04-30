@@ -10,5 +10,5 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class MpaDto {
-    int ratingId;
+    int id;
 }

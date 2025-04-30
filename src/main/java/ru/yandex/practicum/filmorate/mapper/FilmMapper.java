@@ -6,7 +6,6 @@ import ru.yandex.practicum.filmorate.model.FilmRequest;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,7 +41,7 @@ public final class FilmMapper {
                 .build();
 
 
-         if (film.getMpa().getRatingId() == 0) filmDto.setMpa(Set.of());
+         if (film.getMpa().getId() == 0) filmDto.setMpa(Set.of());
 
          return filmDto;
     }
