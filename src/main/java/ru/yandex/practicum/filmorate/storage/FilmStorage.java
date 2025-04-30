@@ -11,6 +11,7 @@ public interface FilmStorage {
 
     // поиск фильмов по ID
     public FilmDto findFilmDtoById(long id);
+
     public Film findFilmById(long id);
 
     // добавление фильма
