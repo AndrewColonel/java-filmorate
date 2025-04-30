@@ -32,18 +32,28 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
 
     private static final String FIND_ALL_QUERY = "SELECT *  FROM films";
     private static final String FIND_BY_ID_QUERY = "SELECT *  FROM films WHERE film_id = ?";
+
+//    private static final String CREATE_QUERY = "INSERT INTO films " +
+//            "(name, duration, description, release_date, rating_id)" +
+//            "VALUES (?, ?, ?, ?, ?)";
+
     private static final String CREATE_QUERY = "INSERT INTO films " +
-            "(name, duration, description, release_date, rating_id)" +
-            "VALUES (?, ?, ?, ?, ?)";
-    private static final String CREATE_GENRE_LIST = "INSERT INTO genre_list (film_id, genre_id)" +
-            "VALUES (?, ?)";
+            "(name, duration, description, release_date)" +
+            "VALUES (?, ?, ?, ?)";
 
+
+    //    private static final String UPDATE_QUERY = "UPDATE films SET name = ?, duration = ?, description = ? , " +
+//            "release_date = ?, rating_id = ?  WHERE film_id = ?";
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, duration = ?, description = ? , " +
-            "release_date = ?, rating_id = ?  WHERE film_id = ?";
+            "release_date = ? WHERE film_id = ?";
+
+    private static final String UPDATE_RATING_MPA_QUERY = "UPDATE films SET rating_id = ?" +
+            "WHERE film_id = ?";
 
 
-//    private static final String UPDATE_RATING_MPA_QUERY = "UPDATE films SET rating_id = ?" +
-//            "WHERE film_id = ?";
+//    private static final String CREATE_GENRE_LIST = "INSERT INTO genre_list (film_id, genre_id)" +
+//            "VALUES (?, ?)";
+
 
     private final LikesDbStorage likesDbStorage;
     private final MpaDbStorage mpaDbStorage;
@@ -88,45 +98,67 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
     @Override
     public FilmDto create(Film film) {
         log.trace("Начата обработка данных для создания нового фильма.");
+        log.debug("Разбираем НОВЫЙ фильм {} ", film);
         if (isNotValid(film)) {
             log.debug("фильм {} не прошел валидацию при создании", film);
             throw new ValidationException("Неверные данные о фильме");
         }
-
-        log.debug("Разбираем НОВЫЙ фильм {} ", film);
+        log.trace("Начато создания нового фильма.");
+//        long id = insert(CREATE_QUERY,
+//                film.getName(),
+//                film.getDuration(),
+//                film.getDescription(),
+//                film.getReleaseDate(),
+//                film.getMpa().getId());
 
         long id = insert(CREATE_QUERY,
                 film.getName(),
                 film.getDuration(),
                 film.getDescription(),
-                film.getReleaseDate(),
-                film.getMpa().getId());
-
+                film.getReleaseDate());
         film.setId(id);
-
-//        if (Objects.nonNull(film.getMpa())) {
-//            if (film.getMpa().getRatingId() != 0)
-//                update(UPDATE_RATING_MPA_QUERY,film.getMpa().getRatingId(),id);
-//        }
-
-
+        log.trace("Присваиваем фильму лайки, если есть ");
         if (Objects.nonNull(film.getLikes())) {
             likesDbStorage.updateLikes(film);
         } else {
             film.setLikes(new HashSet<>());
         }
 
+        log.trace("присваиваем фильму MPA, если все верно.");
+        if (Objects.nonNull(film.getMpa())) {
+            if ((film.getMpa().getId() <= 0) || (film.getMpa().getId() > 5)) {
+                throw new NotFoundException(String.format("MPA с ID %d не найдено", film.getMpa().getId()));
+            }
+            log.debug("MPA фильма {}",film.getMpa().getId());
+            update(UPDATE_RATING_MPA_QUERY, film.getMpa().getId(), id);
+        }
 
+        log.trace("Передаем фильму список Жанров, если все верно.");
         if (Objects.nonNull(film.getGenres())) {
             // проверяем что внутри списка
-            film.setGenres(film.getGenres().stream()
-                    .filter(genres -> genres.getId() != 0)
-                    .collect(Collectors.toSet()));
+//            film.getGenres().stream()
+//                    .peek(System.out::println)
+//                    .filter(genres -> genres.getId() <= 0
+//                            || genres.getId() > 6)
+//                    .findFirst().orElseThrow(() ->
+//                            new NotFoundException("Жанр не существует"));
+
+            if (film.getGenres().stream()
+                    .peek(genres -> log.debug("Жанр {}",genres))
+                    .anyMatch(genres -> genres.getId() <= 0
+                    || genres.getId() > 6)) {
+                throw new NotFoundException("Жанр не существует");
+            }
+
+
+//            film.setGenres(film.getGenres().stream()
+//                    .filter(genres -> genres.getId() != 0)
+//                    .collect(Collectors.toSet()));
+
             genreListDbStorage.addGenreList(film);
         } else {
             film.setGenres(Set.of());
         }
-
         log.debug("Фильм {} добавлен в хранилище", film);
         return FilmMapper.mapToFilmDto(film);
     }
@@ -134,6 +166,7 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
     @Override
     public FilmDto update(Film film) {
         log.trace("Начата обработка данных для Обновления информации об имеющемся фильме.");
+        log.debug("Разбираем ОБНОВЛЕНИЕ фильм {} ", film);
         if (film.getId() == null) {
             log.error("не указан ID при обновлении для фильма {}", film);
             throw new ValidationException("Id должен быть указан");
@@ -142,24 +175,26 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
             log.debug("фильм {} не прошел валидацию при обновлении", film);
             throw new ValidationException("Неверные данные о фильме");
         }
+        log.trace("Начато обновление фильма.");
 
-        log.debug("Разбираем ОБНОВЛЕНИЕ фильм {} ", film);
+//        update(UPDATE_QUERY,
+//                film.getName(),
+//                film.getDuration(),
+//                film.getDescription(),
+//                film.getReleaseDate(),
+//                film.getMpa().getId(),
+//                film.getId());
 
         update(UPDATE_QUERY,
                 film.getName(),
                 film.getDuration(),
                 film.getDescription(),
                 film.getReleaseDate(),
-                film.getMpa().getId(),
-
                 film.getId());
 
-//        if (Objects.nonNull(film.getMpa())) {
-//            if (film.getMpa().getRatingId() != 0)
-//                update(UPDATE_RATING_MPA_QUERY, film.getMpa().getRatingId(), film.getId());
-//        }
 
 
+        log.trace("Присваиваем обновленному фильму лайки, если есть ");
         // если передали список лайков, надо его принять
         if (Objects.nonNull(film.getLikes())) {
             likesDbStorage.updateLikes(film);
@@ -168,20 +203,61 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
             film.setLikes(new HashSet<>());
         }
 
+        log.trace("присваиваем обновленному фильму MPA, если все верно.");
+        if (Objects.nonNull(film.getMpa())) {
+            if ((film.getMpa().getId() <= 0) || (film.getMpa().getId() > 5)) {
+                throw new NotFoundException(String.format("MPA с ID %d не найдено", film.getMpa().getId()));
+            }
+            log.debug("MPA обновленному фильма {}",film.getMpa().getId());
+            update(UPDATE_RATING_MPA_QUERY, film.getMpa().getId(), film.getId());
+        }
 
+        log.trace("Передаем обновленному фильму список Жанров, если все верно.");
         if (Objects.nonNull(film.getGenres())) {
-            // если с обновлением пришли новые жанры, удаляю старые, их немного
+            // проверяем что внутри списка
+//            film.getGenres().stream()
+//                    .filter(genres -> genres.getId() <= 0
+//                            || genres.getId() > 6)
+//                    .findFirst().orElseThrow(() ->
+//                            new NotFoundException("Жанр не существует"));
+
+            if (film.getGenres().stream()
+                    .peek(genres -> log.debug("Жанр {}",genres))
+                    .anyMatch(genres -> genres.getId() <= 0
+                            || genres.getId() > 6)) {
+                throw new NotFoundException("Жанр не существует");
+            }
+
+
+
+
+
+// если с обновлением пришли новые жанры, удаляю старые, их немного
             genreListDbStorage.deleteGenreList(film);
-            // проверяем что внутри списка нет жанров с id = 0
-            film.setGenres(film.getGenres().stream()
-                    .filter(genres -> genres.getId() != 0)
-                    .collect(Collectors.toSet()));
-            // добавляем новые жанры
+//            film.setGenres(film.getGenres().stream()
+//                    .filter(genres -> genres.getId() != 0)
+//                    .collect(Collectors.toSet()));
+
             genreListDbStorage.addGenreList(film);
         } else {
             genreListDbStorage.deleteGenreList(film);
             film.setGenres(Set.of());
         }
+
+
+//        if (Objects.nonNull(film.getGenres())) {
+//            // если с обновлением пришли новые жанры, удаляю старые, их немного
+//            genreListDbStorage.deleteGenreList(film);
+//            // проверяем что внутри списка нет жанров с id = 0
+//            film.setGenres(film.getGenres().stream()
+//                    .filter(genres -> genres.getId() != 0)
+//                    .collect(Collectors.toSet()));
+//            // добавляем новые жанры
+//            genreListDbStorage.addGenreList(film);
+//        } else {
+//            genreListDbStorage.deleteGenreList(film);
+//            film.setGenres(Set.of());
+//        }
 
 
         log.debug("Фильм {} обновлен в хранилище", film);

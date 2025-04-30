@@ -42,7 +42,7 @@ public class Film {
     Set<Genres> genres;
 
     // идентификатор рейтинга фильмов
-    @NotNull
+
     Mpa mpa;
 }
 

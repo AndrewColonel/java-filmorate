@@ -2,10 +2,13 @@
 package ru.yandex.practicum.filmorate.mapper;
 
 import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dto.GenresDto;
 import ru.yandex.practicum.filmorate.model.FilmRequest;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,16 +35,17 @@ public final class FilmMapper {
                 .releaseDate(film.getReleaseDate())
                 .likes(film.getLikes())
                 .genres(film.getGenres().stream()
-                       //TODO
+
 //                        .filter(Objects::nonNull)
 
                         .map(GenresMapper::mapToGenresDto)
-                        .collect(Collectors.toSet()))
-            .mpa(Set.of(MpaMapper.mapToDto(film.getMpa())))
+                        .sorted(Comparator.comparingInt(GenresDto::getId))
+                        .collect(Collectors.toCollection(LinkedHashSet::new)))
+            .mpa((MpaMapper.mapToDto(film.getMpa())))
                 .build();
 
 
-         if (film.getMpa().getId() == 0) filmDto.setMpa(Set.of());
+//         if (film.getMpa().getId() == 0) filmDto.setMpa(Set.of());
 
          return filmDto;
     }

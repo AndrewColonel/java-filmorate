@@ -18,5 +18,5 @@ public class FilmDto {
     LocalDate releaseDate;
     Set<Long> likes;
     Set<GenresDto> genres;
-    Set<MpaDto> mpa;
+    MpaDto mpa;
 }
