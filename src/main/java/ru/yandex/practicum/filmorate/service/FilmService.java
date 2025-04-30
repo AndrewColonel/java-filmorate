@@ -28,6 +28,11 @@ public class FilmService {
         return filmStorage.findAll();
     }
 
+    public FilmDto findFilmById(long id) {
+        return filmStorage.findFilmById(id);
+    }
+
+
     public FilmDto create(Film film) {
         return filmStorage.create(film);
     }
