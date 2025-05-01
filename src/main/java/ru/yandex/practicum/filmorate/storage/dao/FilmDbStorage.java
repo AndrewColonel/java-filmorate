@@ -10,15 +10,16 @@ import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.FilmRequest;
-import ru.yandex.practicum.filmorate.model.Genres;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.time.LocalDate;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 @Slf4j
 @Repository
@@ -54,27 +55,37 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
     @Override
     public List<FilmDto> findAll() {
 
-//        return findMany(FIND_ALL_QUERY).stream()
-//                // используя поток FilmRequest и содержащий rating_id и нахожу MPA, преобразую поток в Film
-//                .map(filmRequest ->
-//                        FilmMapper.mapToFilm(filmRequest, mpaDbStorage.findMpaById(filmRequest.getRatingId())))
-//                // добавляем Likes по id фильма
-//                .peek(film -> film.setLikes(likesDbStorage.findAllLikes(film.getId())))
-//                //добавялем Genres по ID фильма
-//                .peek(film -> film.setGenres(genreListDbStorage.findAllFilmGenres(film.getId())))
-//                // преобразуб поток в FilmDto
-//                .map(FilmMapper::mapToFilmDto)
-//                .toList();
-//
+//        не нужно в цикле обращаться к БД за данными, каждое соединение с БД - это затратная процедура.
+//        Заранее вытяни из БД все данные по жанрам и фильмам, в потоке из них собери
+//        мапу типа Map<film.getId(), Set > а далее уже бери жанры из этой мапы.
+//        Аналогично с лайками
+
+        // собираю мапу с ключами -ID фильма и значением - множество лайков
+        Map<Long, Set<Long>> likes = likesDbStorage.findAllLikes().stream()
+                .collect(groupingBy(Likes::getFilmId,
+                        mapping(Likes::getUserId, toSet())));
+
+        // собираю мапу с ключами -ID фильма и значением - множество жанров
+        Map<Long, Set<Genres>> genres = genreListDbStorage.findAllGenreList().stream()
+                .collect(groupingBy(GenreList::getFilmId,
+                        mapping(genreList ->
+                                Genres.builder()
+                                .id(genreList.getGenreId())
+                                .name(genreList.getGenreName())
+                                .build(),
+                                toSet())));
+
+        // собираю мапу с ключами -ID MPA и значением - модель MPA
+        Map<Integer, Mpa> mpa = mpaDbStorage.findAll().stream()
+                .collect(toMap(Mpa::getId, Function.identity(),
+                        (existing, replacement) -> existing));
+
         return findMany(FIND_ALL_QUERY).stream()
-                // используя поток FilmRequest и содержащий rating_id и нахожу MPA, преобразую поток в Film
                 .map(filmRequest ->
-                        FilmMapper.mapToFilm(filmRequest, mpaDbStorage.findMpaById(filmRequest.getRatingId())))
-                // добавляем Likes по id фильма
-                .peek(film -> film.setLikes(likesDbStorage.findAllLikes(film.getId())))
-                //добавялем Genres по ID фильма
-                .peek(film -> film.setGenres(genreListDbStorage.findAllFilmGenres(film.getId())))
-                // преобразуб поток в FilmDto
+                        FilmMapper.mapToFilm(filmRequest, mpa.get(filmRequest.getRatingId())))
+                .peek(film -> film.setLikes(likes.getOrDefault(film.getId(),Set.of())))
+                .peek(film -> film.setGenres(genres.getOrDefault(film.getId(),Set.of())))
+
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
     }
@@ -91,7 +102,7 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
                 () -> new NotFoundException(String.format("Фильма с ID %d не найдено", id))
         );
         Film film = FilmMapper.mapToFilm(filmRequest, mpaDbStorage.findMpaById(filmRequest.getRatingId()));
-        film.setLikes(likesDbStorage.findAllLikes(id));
+        film.setLikes(likesDbStorage.findFilmAllLikes(id));
         film.setGenres(genreListDbStorage.findAllFilmGenres(film.getId()));
         return FilmMapper.mapToFilmDto(film);
     }
@@ -103,7 +114,7 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
                 () -> new NotFoundException(String.format("Фильма с ID %d не найдено", id))
         );
         Film film = FilmMapper.mapToFilm(filmRequest, mpaDbStorage.findMpaById(filmRequest.getRatingId()));
-        film.setLikes(likesDbStorage.findAllLikes(id));
+        film.setLikes(likesDbStorage.findFilmAllLikes(id));
         film.setGenres(
                 genreListDbStorage.findAllFilmGenres(film.getId()).stream()
                         .sorted(Comparator.comparingInt(Genres::getId))

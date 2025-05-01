@@ -15,7 +15,8 @@ import java.util.stream.Collectors;
 @Repository
 public class LikesDbStorage extends BaseDbStorage<Likes> {
 
-    private static final String FIND_ALL_LIKES_QUERY = "SELECT * FROM likes WHERE film_id = ?";
+    private static final String FIND_ALL_FILM_LIKES_QUERY = "SELECT * FROM likes WHERE film_id = ?";
+    private static final String FIND_ALL_LIKES_QUERY = "SELECT * FROM likes";
     private static final String CREATE_LIKES_ID_QUERY = "INSERT INTO likes (user_id, film_id) VALUES (?, ?)";
     private static final String DELETE_LIKES_ID_QUERY = "DELETE FROM likes WHERE user_id = ? AND film_id = ?";
     private static final String DELETE_ALL_LIKES_ID_QUERY = "DELETE FROM likes WHERE film_id = ?";
@@ -25,28 +26,35 @@ public class LikesDbStorage extends BaseDbStorage<Likes> {
     }
 
     // получаем множество уникальных id пользователей для избранного фильма
-    public Set<Long> findAllLikes(long id) {
+    public Set<Long> findFilmAllLikes(long id) {
         log.debug("Получение списка всех лайков от  пользователя для фильма {}", id);
-        return findMany(FIND_ALL_LIKES_QUERY, id).stream()
+        return findMany(FIND_ALL_FILM_LIKES_QUERY, id).stream()
                 .map(Likes::getUserId)
                 .collect(Collectors.toSet());
     }
 
+    public List<Likes> findAllLikes() {
+        log.debug("выполняется запрос на получение всех лайков для всех фильмов");
+        return findMany(FIND_ALL_LIKES_QUERY);
+    }
 
     public void addLikes(long filmId, long userId) {
-        insert(CREATE_LIKES_ID_QUERY,userId,filmId);
+        log.debug("добавляем лайк пользователя {} , для фильма {}",userId,filmId);
+        insert(CREATE_LIKES_ID_QUERY, userId, filmId);
     }
 
     public void delLikes(long filmId, long userId) {
-        delete(DELETE_LIKES_ID_QUERY,userId,filmId);
+        log.debug("удаляется лайк пользователя {} , для фильма {}",userId,filmId);
+        delete(DELETE_LIKES_ID_QUERY, userId, filmId);
     }
 
     // обновляем список лайков фильма - сначала зачищаем весь список лайков данного фильма
     // и вне зависимости от рзультата, заново  записываем ноые id пользователей поставивших лайки
     public void updateLikes(Film film) {
 
+        log.trace("обновление лайков для фильма {}", film.getId());
         // это "старый" списко лайков
-        List<Likes> oldLikes = findMany(FIND_ALL_LIKES_QUERY, film.getId());
+        List<Likes> oldLikes = findMany(FIND_ALL_FILM_LIKES_QUERY, film.getId());
 
         // мноджество пользователей, которые ранее поставили лайки этому фильму
         Set<Long> oldLikesId = oldLikes.stream()
@@ -70,8 +78,7 @@ public class LikesDbStorage extends BaseDbStorage<Likes> {
     }
 
 
-
     public void deleteAllLikes(Film film) {
-        delete(DELETE_ALL_LIKES_ID_QUERY,film.getId());
+        delete(DELETE_ALL_LIKES_ID_QUERY, film.getId());
     }
 }

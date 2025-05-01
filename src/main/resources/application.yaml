@@ -4,7 +4,7 @@ server.port:
 logging.level:
   root: INFO
   ru.yandex.practicum.filmorate:
-    storage: TRACE
+    storage: ERROR
     service: TRACE
 
 logging.level.org.zalando.logbook: ERROR
