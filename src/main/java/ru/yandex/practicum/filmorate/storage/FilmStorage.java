@@ -7,13 +7,13 @@ import java.util.Collection;
 
 public interface FilmStorage {
     // получение всех фильмов
-    Collection<FilmDto> findAll();
+    Collection<Film> findAll();
 
     // получение списка из первых `count` фильмов по количеству лайков из БД
     Collection<Film> findFilmTopChart(long count);
 
     // поиск фильмов по ID
-    public FilmDto findFilmDtoById(long id);
+    public Film findFilmDtoById(long id);
 
     public Film findFilmById(long id);
 

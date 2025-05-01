@@ -57,10 +57,8 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
     }
 
     @Override
-    public List<FilmDto> findAll() {
-        return findAllFilms(FIND_ALL_QUERY).stream()
-                .map(FilmMapper::mapToFilmDto)
-                .toList();
+    public List<Film> findAll() {
+        return findAllFilms(FIND_ALL_QUERY);
     }
 
     // вспомогательный метод для получения списка всех фильмоы
@@ -104,14 +102,14 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
     }
 
     @Override
-    public FilmDto findFilmDtoById(long id) {
+    public Film findFilmDtoById(long id) {
         FilmRequest filmRequest = findOne(FIND_BY_ID_QUERY, id).orElseThrow(
                 () -> new NotFoundException(String.format("Фильма с ID %d не найдено", id))
         );
         Film film = FilmMapper.mapToFilm(filmRequest, mpaDbStorage.findMpaById(filmRequest.getRatingId()));
         film.setLikes(likesDbStorage.findFilmAllLikes(id));
         film.setGenres(genreListDbStorage.findAllFilmGenres(film.getId()));
-        return FilmMapper.mapToFilmDto(film);
+        return film;
     }
 
 

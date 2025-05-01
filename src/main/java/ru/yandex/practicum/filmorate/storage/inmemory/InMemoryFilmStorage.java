@@ -21,9 +21,10 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     // получение всех фильмов
     @Override
-    public Collection<FilmDto> findAll() {
-        log.trace("Получение списка всех фильмов.");
-        return films.values();
+    public Collection<Film> findAll() {
+//        log.trace("Получение списка всех фильмов.");
+//        return films.values();
+        return null;
     }
 
     @Override
@@ -34,10 +35,11 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     // поиск фильмов по ID
     @Override
-    public FilmDto findFilmDtoById(long id) {
-        FilmDto filmDto = films.get(id);
-        if (filmDto == null) throw new NotFoundException(String.format("Фильма с ID %d не найдено", id));
-        return filmDto;
+    public Film findFilmDtoById(long id) {
+//        FilmDto filmDto = films.get(id);
+//        if (filmDto == null) throw new NotFoundException(String.format("Фильма с ID %d не найдено", id));
+//        return filmDto;
+        return  null;
     }
 
     @Override
