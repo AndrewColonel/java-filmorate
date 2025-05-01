@@ -33,10 +33,12 @@ public class FriendsDbStorage extends BaseDbStorage<Friends> {
     }
 
     public void addFriend(long userId, long friendId) {
+        log.debug("добавляем друга {} для пользователя {} ",friendId,userId);
         insert(CREATE_FRIENDS_ID_QUERY, userId, friendId);
     }
 
     public void delFriend(long userId, long friendId) {
+        log.debug("elfkztv друга {} для пользователя {} ",friendId,userId);
         delete(DELETE_FRIENDS_ID_QUERY,userId,friendId);
     }
 
@@ -44,6 +46,7 @@ public class FriendsDbStorage extends BaseDbStorage<Friends> {
     // обновляем список друзей пользователя - необходимо определить
     // как изменился список друзей- друзья могли удалиться и добавиться
     public void updateFriends(User user) {
+        log.trace("обновление друзей для пользователя {}", user.getId());
         // при отказе пользователя от друга, друг также теряет из друзей этого пользователя
         // собираем список друзей от которых "отказался" пользователь, т.е дружеские связи которые надо будет удалить
         // это "старый" список друзей, до обновления
