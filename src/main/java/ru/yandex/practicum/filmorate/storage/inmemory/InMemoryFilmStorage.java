@@ -26,6 +26,12 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.values();
     }
 
+    @Override
+    public Collection<Film> findFilmTopChart(long count) {
+        return null;
+
+    }
+
     // поиск фильмов по ID
     @Override
     public FilmDto findFilmDtoById(long id) {

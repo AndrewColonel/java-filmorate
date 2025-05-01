@@ -18,7 +18,6 @@ public class GenreListDbStorage extends BaseDbStorage<GenreList> {
     private static final String FIND_ALL_BENRELIST_QUERY = "SELECT gl.genre_list_id, gl.film_id, gl.genre_id, " +
             "g.genre_name  " +
             "FROM genre_list AS gl LEFT OUTER JOIN  genre AS g ON gl.genre_id = g.genre_id WHERE film_id = ?";
-//    private static final String UPDATE_GENRELIST_QUERY = "UPDATE genre_list SET genre_id = ? WHERE film_id = ?";
     private static final String CREATE_GENRELIST_QUERY = "INSERT INTO genre_list (film_id, genre_id)" +
             "VALUES (?, ?)";
     private static final String DELETE_ALL_GENRELIST_ID_QUERY = "DELETE FROM genre_list WHERE film_id = ?";

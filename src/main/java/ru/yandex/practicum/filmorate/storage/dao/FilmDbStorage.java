@@ -54,6 +54,18 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
     @Override
     public List<FilmDto> findAll() {
 
+//        return findMany(FIND_ALL_QUERY).stream()
+//                // используя поток FilmRequest и содержащий rating_id и нахожу MPA, преобразую поток в Film
+//                .map(filmRequest ->
+//                        FilmMapper.mapToFilm(filmRequest, mpaDbStorage.findMpaById(filmRequest.getRatingId())))
+//                // добавляем Likes по id фильма
+//                .peek(film -> film.setLikes(likesDbStorage.findAllLikes(film.getId())))
+//                //добавялем Genres по ID фильма
+//                .peek(film -> film.setGenres(genreListDbStorage.findAllFilmGenres(film.getId())))
+//                // преобразуб поток в FilmDto
+//                .map(FilmMapper::mapToFilmDto)
+//                .toList();
+//
         return findMany(FIND_ALL_QUERY).stream()
                 // используя поток FilmRequest и содержащий rating_id и нахожу MPA, преобразую поток в Film
                 .map(filmRequest ->
@@ -65,6 +77,12 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
                 // преобразуб поток в FilmDto
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
+    }
+
+    @Override
+    public Collection<Film> findFilmTopChart(long count) {
+        return null;
+
     }
 
     @Override
@@ -90,10 +108,9 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
                 genreListDbStorage.findAllFilmGenres(film.getId()).stream()
                         .sorted(Comparator.comparingInt(Genres::getId))
                         .collect(Collectors.toCollection(LinkedHashSet::new))
-                );
+        );
         return film;
     }
-
 
 
     @Override
@@ -127,7 +144,7 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
             if ((film.getMpa().getId() <= 0) || (film.getMpa().getId() > 5)) {
                 throw new NotFoundException(String.format("MPA с ID %d не найдено", film.getMpa().getId()));
             }
-            log.debug("MPA фильма {}",film.getMpa().getId());
+            log.debug("MPA фильма {}", film.getMpa().getId());
             update(UPDATE_RATING_MPA_QUERY, film.getMpa().getId(), id);
         }
 
@@ -135,9 +152,9 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
         if (Objects.nonNull(film.getGenres())) {
 
             if (film.getGenres().stream()
-                    .peek(genres -> log.debug("Жанр {}",genres))
+                    .peek(genres -> log.debug("Жанр {}", genres))
                     .anyMatch(genres -> genres.getId() <= 0
-                    || genres.getId() > 6)) {
+                            || genres.getId() > 6)) {
                 throw new NotFoundException("Жанр не существует");
             }
 
@@ -186,7 +203,7 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
             if ((film.getMpa().getId() <= 0) || (film.getMpa().getId() > 5)) {
                 throw new NotFoundException(String.format("MPA с ID %d не найдено", film.getMpa().getId()));
             }
-            log.debug("MPA обновленному фильма {}",film.getMpa().getId());
+            log.debug("MPA обновленному фильма {}", film.getMpa().getId());
             update(UPDATE_RATING_MPA_QUERY, film.getMpa().getId(), film.getId());
         }
 
@@ -194,7 +211,7 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
         if (Objects.nonNull(film.getGenres())) {
 
             if (film.getGenres().stream()
-                    .peek(genres -> log.debug("Жанр {}",genres))
+                    .peek(genres -> log.debug("Жанр {}", genres))
                     .anyMatch(genres -> genres.getId() <= 0
                             || genres.getId() > 6)) {
                 throw new NotFoundException("Жанр не существует");

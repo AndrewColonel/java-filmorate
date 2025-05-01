@@ -46,11 +46,9 @@ public class UserService {
             log.debug("Для пользователя с ID {} не удалось добавить в друзья ID {}", userId, friendId);
         }
 
-
         // дружба должна стать односторонней. Теперь, если пользователь отправляет заявку в друзья,
         // он добавляет другого человека в свой список друзей, но сам в его список не попадает
-        //  userStorage.addFriend(friendId,userId);
-        userStorage.addFriend(userId, friendId);
+             userStorage.addFriend(userId, friendId);
         return user;
     }
 
@@ -64,9 +62,7 @@ public class UserService {
         } else {
             log.debug("Для пользователя с ID {} не удалось удалить из друзей {}", userId, friendId);
         }
-
         userStorage.delFriend(userId, friendId);
-//        userStorage.delFriend(friendId, userId);
         return user;
     }
 
