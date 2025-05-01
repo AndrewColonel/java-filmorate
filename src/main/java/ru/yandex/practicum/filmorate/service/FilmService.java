@@ -37,11 +37,11 @@ public class FilmService {
 
 
     public FilmDto create(Film film) {
-        return filmStorage.create(film);
+        return FilmMapper.mapToFilmDto(filmStorage.create(film));
     }
 
     public FilmDto update(Film newFilm) {
-        return filmStorage.update(newFilm);
+        return FilmMapper.mapToFilmDto(filmStorage.update(newFilm));
     }
 
     // пользователь ставит лайк фильму

@@ -51,7 +51,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     // добавление фильма
     @Override
-    public FilmDto create(Film film) {
+    public Film create(Film film) {
         log.trace("Начата обработка данных для создания нового фильма.");
         if (isNotValid(film)) {
             log.debug("фильм {} не прошел валидацию при создании", film);
@@ -62,12 +62,12 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (film.getLikes() == null) film.setLikes(new HashSet<>());
         films.put(film.getId(), FilmMapper.mapToFilmDto(film));
         log.debug("Фильм {} добавлен в хранилище", film);
-        return FilmMapper.mapToFilmDto(film);
+        return film;
     }
 
     // обновление фильма
     @Override
-    public FilmDto update(Film newFilm) {
+    public Film update(Film newFilm) {
         log.trace("Начата обработка данных для Обновления информации об имеющемся фильме.");
         if (newFilm.getId() == null) {
             log.error("не указан ID при обновлении для фильма {}", newFilm);
@@ -89,7 +89,8 @@ public class InMemoryFilmStorage implements FilmStorage {
                 oldFilm.setLikes(newFilm.getLikes());
             }
             log.debug("Фильм {} обновлен в хранилище", oldFilm);
-            return oldFilm;
+//            return oldFilm;
+            return null;
         }
         throw new NotFoundException("Фильм с id = " + newFilm.getId() + " не найден");
     }

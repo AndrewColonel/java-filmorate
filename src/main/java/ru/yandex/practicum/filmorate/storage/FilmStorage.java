@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
@@ -18,10 +17,10 @@ public interface FilmStorage {
     public Film findFilmById(long id);
 
     // добавление фильма
-    FilmDto create(Film film);
+    Film create(Film film);
 
     // обновление фильма
-    FilmDto update(Film newFilm);
+    Film update(Film newFilm);
 
     void addLikes(long filmId, long userId);
 

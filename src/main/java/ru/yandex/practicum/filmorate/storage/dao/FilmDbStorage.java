@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
@@ -130,7 +129,7 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
 
 
     @Override
-    public FilmDto create(Film film) {
+    public Film create(Film film) {
         log.trace("Начата обработка данных для создания нового фильма.");
         log.debug("Разбираем НОВЫЙ фильм {} ", film);
         if (isNotValid(film)) {
@@ -179,11 +178,11 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
             film.setGenres(Set.of());
         }
         log.debug("Фильм {} добавлен в хранилище", film);
-        return FilmMapper.mapToFilmDto(film);
+        return film;
     }
 
     @Override
-    public FilmDto update(Film film) {
+    public Film update(Film film) {
         log.trace("Начата обработка данных для Обновления информации об имеющемся фильме.");
         log.debug("Разбираем ОБНОВЛЕНИЕ фильм {} ", film);
         if (film.getId() == null) {
@@ -242,7 +241,7 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
         }
 
         log.debug("Фильм {} обновлен в хранилище", film);
-        return FilmMapper.mapToFilmDto(film);
+        return film;
     }
 
     public void addLikes(long filmId, long userId) {
