@@ -4,12 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -75,10 +77,13 @@ public class FilmService {
     // предварительно весь срисок фильмов был помещен в TreeSet с компоратором для получения чарта
     public Collection<FilmDto> topChart(long count) {
         log.trace("Вызван метод вывод чарт списка для {} фильмов", count);
-        Set<FilmDto> chartSet =
-                new TreeSet<>(Comparator.comparingInt((FilmDto f) -> f.getLikes().size()).reversed());
-        chartSet.addAll(filmStorage.findAll());
-        return chartSet.stream().limit(count).toList();
+//        Set<FilmDto> chartSet =
+//                new TreeSet<>(Comparator.comparingInt((FilmDto f) -> f.getLikes().size()).reversed());
+//        chartSet.addAll(filmStorage.findAll());
+//        return chartSet.stream().limit(count).toList();
+       return filmStorage.findFilmTopChart(count).stream()
+               .map(FilmMapper::mapToFilmDto)
+               .collect(Collectors.toSet());
     }
 
 

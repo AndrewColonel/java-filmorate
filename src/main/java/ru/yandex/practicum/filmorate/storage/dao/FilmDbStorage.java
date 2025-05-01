@@ -28,7 +28,11 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
 
     private static final String FIND_ALL_QUERY = "SELECT *  FROM films";
     private static final String FIND_BY_ID_QUERY = "SELECT *  FROM films WHERE film_id = ?";
-
+    private static final String FIND_TOP_CHART_FILMS = "SELECT f.film_id, f.name, f.duration, f.description, " +
+            "f.release_date, f.rating_id FROM films AS f LEFT OUTER JOIN likes AS l ON f.film_id = l.film_id " +
+            "GROUP BY f.film_id " +
+            "ORDER BY COUNT(l.user_id) " +
+            "LIMIT ?";
     private static final String CREATE_QUERY = "INSERT INTO films " +
             "(rating_id, name, duration, description, release_date)" +
             "VALUES (1, ?, ?, ?, ?)";
@@ -54,11 +58,15 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
 
     @Override
     public List<FilmDto> findAll() {
+        return findAllFilms(FIND_ALL_QUERY).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .toList();
+    }
 
-//        не нужно в цикле обращаться к БД за данными, каждое соединение с БД - это затратная процедура.
-//        Заранее вытяни из БД все данные по жанрам и фильмам, в потоке из них собери
-//        мапу типа Map<film.getId(), Set > а далее уже бери жанры из этой мапы.
-//        Аналогично с лайками
+    // вспомогательный метод для получения списка всех фильмоы
+    public List<Film> findAllFilms(String query,  Object... params) {
+//        Заранее вытягиваю из БД все данные по жанрам (лайкам и MPA) и фильмам, собираю
+//        мапу типа Map<film.getId(), Set > а далее - жанры и лайкамииз этой мапы.
 
         // собираю мапу с ключами -ID фильма и значением - множество лайков
         Map<Long, Set<Long>> likes = likesDbStorage.findAllLikes().stream()
@@ -69,10 +77,10 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
         Map<Long, Set<Genres>> genres = genreListDbStorage.findAllGenreList().stream()
                 .collect(groupingBy(GenreList::getFilmId,
                         mapping(genreList ->
-                                Genres.builder()
-                                .id(genreList.getGenreId())
-                                .name(genreList.getGenreName())
-                                .build(),
+                                        Genres.builder()
+                                                .id(genreList.getGenreId())
+                                                .name(genreList.getGenreName())
+                                                .build(),
                                 toSet())));
 
         // собираю мапу с ключами -ID MPA и значением - модель MPA
@@ -80,19 +88,20 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
                 .collect(toMap(Mpa::getId, Function.identity(),
                         (existing, replacement) -> existing));
 
-        return findMany(FIND_ALL_QUERY).stream()
+        return findMany(query,params).stream()
                 .map(filmRequest ->
                         FilmMapper.mapToFilm(filmRequest, mpa.get(filmRequest.getRatingId())))
-                .peek(film -> film.setLikes(likes.getOrDefault(film.getId(),Set.of())))
-                .peek(film -> film.setGenres(genres.getOrDefault(film.getId(),Set.of())))
-
-                .map(FilmMapper::mapToFilmDto)
+                .peek(film -> film.setLikes(likes.getOrDefault(film.getId(), Set.of())))
+                .peek(film -> film.setGenres(genres.getOrDefault(film.getId(), Set.of())))
                 .toList();
     }
 
+    //БД сами могут отсортировать фильмы
+    // и ограничить количество возвращаемых элементов, для этого не нужно вытягивать все фильмы
+
     @Override
     public Collection<Film> findFilmTopChart(long count) {
-        return null;
+        return findAllFilms(FIND_TOP_CHART_FILMS,count);
 
     }
 
