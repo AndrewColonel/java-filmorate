@@ -77,14 +77,9 @@ public class FilmService {
     // предварительно весь срисок фильмов был помещен в TreeSet с компоратором для получения чарта
     public Collection<FilmDto> topChart(long count) {
         log.trace("Вызван метод вывод чарт списка для {} фильмов", count);
-//        Set<FilmDto> chartSet =
-//                new TreeSet<>(Comparator.comparingInt((FilmDto f) -> f.getLikes().size()).reversed());
-//        chartSet.addAll(filmStorage.findAll());
-//        return chartSet.stream().limit(count).toList();
        return filmStorage.findFilmTopChart(count).stream()
                .map(FilmMapper::mapToFilmDto)
-               .collect(Collectors.toSet());
+               .toList();
     }
-
 
 }

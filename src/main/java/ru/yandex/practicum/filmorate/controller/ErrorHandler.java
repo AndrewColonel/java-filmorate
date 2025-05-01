@@ -32,17 +32,17 @@ public class ErrorHandler {
     }
 
 
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    public ErrorResponse handleInternalServerException(final InternalServerException e) {
-//        return new ErrorResponse(e.getMessage(), "Произошла непредвиденная ошибка.");
-//    }
-//
-//
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    public ErrorResponse handleRuntimeException(final RuntimeException e) {
-//        return new ErrorResponse(e.getMessage(), "Произошла непредвиденная ошибка.");
-//    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleInternalServerException(final InternalServerException e) {
+        return new ErrorResponse(e.getMessage(), "Произошла непредвиденная ошибка.");
+    }
+
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleRuntimeException(final RuntimeException e) {
+        return new ErrorResponse(e.getMessage(), "Произошла непредвиденная ошибка.");
+    }
 
 }

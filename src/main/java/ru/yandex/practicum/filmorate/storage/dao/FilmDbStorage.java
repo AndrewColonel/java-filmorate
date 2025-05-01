@@ -31,7 +31,7 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
     private static final String FIND_TOP_CHART_FILMS = "SELECT f.film_id, f.name, f.duration, f.description, " +
             "f.release_date, f.rating_id FROM films AS f LEFT OUTER JOIN likes AS l ON f.film_id = l.film_id " +
             "GROUP BY f.film_id " +
-            "ORDER BY COUNT(l.user_id) " +
+            "ORDER BY COUNT(l.user_id) DESC " +
             "LIMIT ?";
     private static final String CREATE_QUERY = "INSERT INTO films " +
             "(rating_id, name, duration, description, release_date)" +
@@ -96,10 +96,8 @@ public class FilmDbStorage extends BaseDbStorage<FilmRequest> implements FilmSto
                 .toList();
     }
 
-    //БД сами могут отсортировать фильмы
-    // и ограничить количество возвращаемых элементов, для этого не нужно вытягивать все фильмы
-
     @Override
+   // метод для получения списка фильмов, отсортированного по убыванию популярности (количества лайков)
     public Collection<Film> findFilmTopChart(long count) {
         return findAllFilms(FIND_TOP_CHART_FILMS,count);
 
