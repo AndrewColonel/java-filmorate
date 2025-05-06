@@ -1,10 +1,14 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.inmemory;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -13,21 +17,36 @@ import java.util.*;
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
 
-    private final Map<Long, Film> films = new HashMap<>();
+    private final Map<Long, FilmDto> films = new HashMap<>();
 
     // получение всех фильмов
     @Override
     public Collection<Film> findAll() {
-        log.trace("Получение списка всех фильмов.");
-        return films.values();
+//        log.trace("Получение списка всех фильмов.");
+//        return films.values();
+        return null;
+    }
+
+    @Override
+    public Collection<Film> findFilmTopChart(long count) {
+        return null;
+
     }
 
     // поиск фильмов по ID
     @Override
+    public Film findFilmDtoById(long id) {
+//        FilmDto filmDto = films.get(id);
+//        if (filmDto == null) throw new NotFoundException(String.format("Фильма с ID %d не найдено", id));
+//        return filmDto;
+        return  null;
+    }
+
+    @Override
     public Film findFilmById(long id) {
-        Film film = films.get(id);
-        if (film == null) throw new NotFoundException(String.format("Фильма с ID %d не найдено", id));
-        return film;
+        return new Film(1L, "nisi eiusmod", 100,"adipisicing",
+                LocalDate.parse("1967-03-25"), Set.of(),
+                Set.of(),new Mpa(1, "htqnbyu"));
     }
 
     // добавление фильма
@@ -41,7 +60,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         film.setId(getNextId());
         // при создании c lombok контрсутором список остался null- необходимо создать пустой список
         if (film.getLikes() == null) film.setLikes(new HashSet<>());
-        films.put(film.getId(), film);
+        films.put(film.getId(), FilmMapper.mapToFilmDto(film));
         log.debug("Фильм {} добавлен в хранилище", film);
         return film;
     }
@@ -59,7 +78,7 @@ public class InMemoryFilmStorage implements FilmStorage {
                 log.debug("фильм {} не прошел валидацию при обновлении", newFilm);
                 throw new ValidationException("Неверные данные о фильме");
             }
-            Film oldFilm = films.get(newFilm.getId());
+            FilmDto oldFilm = films.get(newFilm.getId());
             oldFilm.setName(newFilm.getName());
             oldFilm.setDescription(newFilm.getDescription());
             oldFilm.setReleaseDate(newFilm.getReleaseDate());
@@ -70,9 +89,18 @@ public class InMemoryFilmStorage implements FilmStorage {
                 oldFilm.setLikes(newFilm.getLikes());
             }
             log.debug("Фильм {} обновлен в хранилище", oldFilm);
-            return oldFilm;
+//            return oldFilm;
+            return null;
         }
         throw new NotFoundException("Фильм с id = " + newFilm.getId() + " не найден");
+    }
+
+    public  void addLikes(long filmId, long userId) {
+
+    }
+
+    public void delLikes(long filmId, long userId) {
+
     }
 
     // вспомогательный метод валидации экземпляра фильма

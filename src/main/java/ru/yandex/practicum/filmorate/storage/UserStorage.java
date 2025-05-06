@@ -17,4 +17,9 @@ public interface UserStorage {
     // обновление имеющегося пользователя
     User update(User newUser);
 
+    void addFriend(long userId, long friendId);
+
+    void delFriend(long userId, long friendId);
+
+
 }

@@ -45,6 +45,10 @@ public class UserService {
         } else {
             log.debug("Для пользователя с ID {} не удалось добавить в друзья ID {}", userId, friendId);
         }
+
+        // дружба должна стать односторонней. Теперь, если пользователь отправляет заявку в друзья,
+        // он добавляет другого человека в свой список друзей, но сам в его список не попадает
+             userStorage.addFriend(userId, friendId);
         return user;
     }
 
@@ -58,6 +62,7 @@ public class UserService {
         } else {
             log.debug("Для пользователя с ID {} не удалось удалить из друзей {}", userId, friendId);
         }
+        userStorage.delFriend(userId, friendId);
         return user;
     }
 
@@ -71,7 +76,7 @@ public class UserService {
 
     // возвращаем список друзей, общих с другим пользователем
     public Collection<User> getCommonFriends(long userId, long otherId) {
-        log.trace("Вызван метод по вормированию списка общих друзей для пользователей с ID {} и {}", userId, otherId);
+        log.trace("Вызван метод по формированию списка общих друзей для пользователей с ID {} и {}", userId, otherId);
         Collection<Long> otherUserFriendList = getFriendsList(otherId);
         return getFriendsList(userId).stream()
                 .filter(otherUserFriendList::contains)
