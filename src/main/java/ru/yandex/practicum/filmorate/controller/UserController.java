@@ -1,64 +1,93 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.EventApiDto;
+import ru.yandex.practicum.filmorate.model.FilmApiDto;
+import ru.yandex.practicum.filmorate.model.UserApiDto;
+import ru.yandex.practicum.filmorate.service.EventService;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
+import java.util.Comparator;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
+    private final FilmService filmService;
+    private final EventService eventService;
 
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    // STORAGE OPERATIONS
 
     @GetMapping
-    // получение списка всех пользователей
-    public Collection<User> findAll() {
-        return userService.findAll();
+    public Collection<UserApiDto> getUsers() {
+        return userService.getUsers();
+    }
+
+    @GetMapping("/{id}")
+    public UserApiDto getUserById(@PathVariable Long id) {
+        return userService.getUserById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public UserApiDto deleteUserById(@PathVariable Long id) {
+        return userService.deleteUserById(id);
     }
 
     @PostMapping
-    // получение всех фильмов
-    public User create(@Valid @RequestBody User user) {
-        return userService.create(user);
+    public UserApiDto createUser(@Valid @RequestBody UserApiDto user) {
+        return userService.createUser(user);
     }
 
     @PutMapping
-    // обновление пользователя
-    public User update(@Valid @RequestBody User newUser) {
-        return userService.update(newUser);
+    public UserApiDto updateUser(@Valid @RequestBody UserApiDto user) {
+        return userService.updateUser(user);
     }
 
-    // добавление в друзья
-    @PutMapping("/{id}/friends/{friendId}")
-    public User addFriends(@PathVariable("id") long userId, @PathVariable("friendId") long friendId) {
-        return userService.addFriends(userId, friendId);
+    // FRIENDS OPERATIONS
+
+    @PutMapping("/{userId}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+        userService.addFriend(userId, friendId);
     }
 
-    // удаление из друзей
-    @DeleteMapping("/{id}/friends/{friendId}")
-    public User delFriends(@PathVariable("id") long userId, @PathVariable("friendId") long friendId) {
-        return userService.delFriends(userId, friendId);
+    @DeleteMapping("/{userId}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+        userService.removeFriend(userId, friendId);
     }
 
-    // возвращаем список пользователей, являющихся его друзьями
-    @GetMapping("/{id}/friends")
-    public Collection<User> getFriends(@PathVariable("id") long id) {
-        return userService.getFriends(id);
+    @GetMapping("/{userId}/friends")
+    public Collection<UserApiDto> findFriends(@PathVariable Long userId) {
+        return userService.findFriends(userId).stream()
+                .sorted(Comparator.comparing(UserApiDto::getId))
+                .toList();
     }
 
-    // список друзей, общих с другим пользователем
-    @GetMapping("/{id}/friends/common/{otherId}")
-    public Collection<User> getCommonFriends(@PathVariable("id") long userId,
-                                             @PathVariable("otherId") long otherId) {
-        return userService.getCommonFriends(userId, otherId);
+    @GetMapping("/{userId}/friends/common/{otherId}")
+    public Collection<UserApiDto> findMutualFriends(@PathVariable Long userId, @PathVariable Long otherId) {
+        return userService.findMutualFriends(userId, otherId);
     }
+
+    // RECOMMENDATIONS
+
+    @GetMapping("/{userId}/recommendations")
+    public Collection<FilmApiDto> findRecommendations(@PathVariable Long userId) {
+        return filmService.findRecommendations(userId);
+    }
+
+    // FEED
+
+    @GetMapping("/{userId}/feed")
+    public Collection<EventApiDto> getFeed(@PathVariable Long userId) {
+        return eventService.getFeed(userId);
+    }
+
 }

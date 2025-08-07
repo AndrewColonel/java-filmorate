@@ -1,14 +1,23 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+import java.time.Instant;
 
 @Getter
+@AllArgsConstructor
 public class ErrorResponse {
-    private final String error;
-    private final String description;
 
-    public ErrorResponse(String error, String description) {
-        this.error = error;
-        this.description = description;
-    }
+    Instant timestamp;
+
+    HttpStatus status;
+
+    String error;
+
+    String message;
+
+    String path;
+
 }

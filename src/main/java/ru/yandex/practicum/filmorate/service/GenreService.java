@@ -1,31 +1,72 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.Genres;
-import ru.yandex.practicum.filmorate.storage.GenreStorage;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.GenreApiDto;
+import ru.yandex.practicum.filmorate.model.GenreMapper;
+import ru.yandex.practicum.filmorate.model.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.storage.GenreDBStorage;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class GenreService {
 
-    private final GenreStorage genreStorage;
+    private final GenreDBStorage genreDBStorage;
 
-    @Autowired
-    public GenreService(GenreStorage genreStorage) {
-        this.genreStorage = genreStorage;
+    public Collection<GenreApiDto> getGenres() {
+        return genreDBStorage.getGenres().stream()
+                .filter(Objects::nonNull)
+                .map(GenreMapper::toDto)
+                .toList();
     }
 
-
-    public Collection<Genres> findAll() {
-        return genreStorage.findAll();
+    public GenreApiDto getGenreById(Long id) {
+        if (id == null || id < 1) throw new IllegalArgumentException("Invalid Genre Id");
+        Genre genre = genreDBStorage.getGenreById(id);
+        return GenreMapper.toDto(genre);
     }
 
+    public void checkFilmGenres(Film film) {
+        if (film == null) throw new IllegalArgumentException("Invalid Null Film");
+        if (film.getGenres() == null || film.getGenres().isEmpty()) return;
+        String csv = film.getGenres().stream()
+                .filter(Objects::nonNull)
+                .map(Genre::getId)
+                .filter(Objects::nonNull)
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+        List<Genre> dbGenres = getGenreByIdCSV(csv);
 
-    public Genres findGenresById(int id) {
-        return genreStorage.findGenresById(id);
+        Set<Long> filmGenreIds = film.getGenres().stream()
+                .filter(Objects::nonNull)
+                .map(Genre::getId)
+                .collect(Collectors.toSet());
+
+        Set<Long> dbGenreIds = dbGenres.stream()
+                .filter(Objects::nonNull)
+                .map(Genre::getId)
+                .collect(Collectors.toSet());
+
+        if (!Objects.equals(filmGenreIds, dbGenreIds)) {
+            throw new NotFoundException("Genres not found", csv);
+        }
+
     }
 
+    private List<Genre> getGenreByIdCSV(String idList) {
+        if (idList == null || !idList.matches("[\\d,\\s]*"))
+            throw new IllegalArgumentException("Invalid Genre Id list");
+        return genreDBStorage.getGenreByIdCSV(idList);
+    }
 
 }

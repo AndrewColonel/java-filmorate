@@ -3,27 +3,37 @@ package ru.yandex.practicum.filmorate.storage;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface FilmStorage {
-    // получение всех фильмов
-    Collection<Film> findAll();
 
-    // получение списка из первых `count` фильмов по количеству лайков из БД
-    Collection<Film> findFilmTopChart(long count);
+    Collection<Film> getFilms();
 
-    // поиск фильмов по ID
-    public Film findFilmDtoById(long id);
+    Film getFilmById(Long id);
 
-    public Film findFilmById(long id);
+    void checkFilmById(Long id);
 
-    // добавление фильма
-    Film create(Film film);
+    Film deleteFilmById(Long id);
 
-    // обновление фильма
-    Film update(Film newFilm);
+    Film createFilm(Film film);
 
-    void addLikes(long filmId, long userId);
+    Film updateFilm(Film film);
 
-    void delLikes(long filmId, long userId);
+    void addLike(Long filmId, Long userId);
+
+    void removeLike(Long filmId, Long userId);
+
+    List<Film> getPopular(Integer count, Long genreId, String year);
+
+    //add-director feature
+    Collection<Film> getDirectorFilm(Integer id, String sortBy);
+
+    List<Film> getRecommendations(Long userId);
+
+    Collection<Long> getFilmLikesByUserId(Long userId);
+
+    Collection<Film> findFilmsByDirector(String query);
+
+    Collection<Film> findFilmsByTitle(String query);
 
 }
